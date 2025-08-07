@@ -5,11 +5,13 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.farm.fireflyserver.common.util.BaseUpdatedTimeEntity;
 
 @Entity
 @Getter(AccessLevel.PROTECTED)
 @NoArgsConstructor
-public class LEDState {
+@Table(name="led_state")
+public class LEDState extends BaseUpdatedTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +22,6 @@ public class LEDState {
     @Enumerated(EnumType.STRING)
     private SensorGbn sensorGbn;
 
-    //변경 시간 추가
+
 
 }

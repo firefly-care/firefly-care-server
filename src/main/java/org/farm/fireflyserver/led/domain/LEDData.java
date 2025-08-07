@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 @Entity
 @Getter(AccessLevel.PROTECTED)
 @NoArgsConstructor
+@Table(name="led_data")
 public class LEDData {
 
     @Id

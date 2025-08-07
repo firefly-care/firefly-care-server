@@ -6,9 +6,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter(AccessLevel.PROTECTED)
 @NoArgsConstructor
 @Entity
+@Table(name="led_history")
 public class LEDHistory {
 
     @Id
@@ -20,6 +23,7 @@ public class LEDHistory {
     @Enumerated(EnumType.STRING)
     private SensorGbn sensorGbn;
 
-    //점등 시간 추가
+    private LocalDateTime OnDate;
+
 
 }
