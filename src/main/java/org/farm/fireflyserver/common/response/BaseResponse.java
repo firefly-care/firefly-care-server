@@ -6,7 +6,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
