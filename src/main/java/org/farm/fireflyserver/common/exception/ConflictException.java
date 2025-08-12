@@ -1,4 +1,4 @@
-package com.example.comus.global.error.exception;
+package org.farm.fireflyserver.common.exception;
 
 import org.farm.fireflyserver.common.exception.BusinessException;
 import org.farm.fireflyserver.common.response.ErrorCode;
