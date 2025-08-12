@@ -52,9 +52,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_REPO }}:${{ github.sha }}, ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
 
-      # ========================================================
-      # 7. 배포 단계 (docker run 명령어가 단순해집니다)
-      # ========================================================
+      # 7. 배포 단계
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
         with:
