@@ -8,7 +8,7 @@ FROM gradle:8-jdk17 AS builder
 WORKDIR /build
 
 # Gradle 빌드 파일들을 먼저 복사하여 의존성을 캐시합니다.
-COPY build.gradle.kts settings.gradle.kts ./
+COPY build.gradle settings.gradle ./
 COPY gradle ./gradle
 COPY gradlew ./
 
