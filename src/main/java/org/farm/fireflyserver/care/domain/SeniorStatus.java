@@ -24,5 +24,6 @@ public class SeniorStatus {
     private Double lowEngScr;
     private Double inactScr;
 
+    @Comment("마지막 활동 시간")
     private Integer lastActTime;
 }

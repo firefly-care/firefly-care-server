@@ -8,14 +8,16 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter(AccessLevel.PROTECTED)
 @NoArgsConstructor
-public class User {
+public class Account {
 
     @Id
+    @Comment("계정 아이디")
     private String id;
 
     @Column(nullable = false)
     private String pwd;
 
+    @Comment("계정 권한")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Authority authority;
