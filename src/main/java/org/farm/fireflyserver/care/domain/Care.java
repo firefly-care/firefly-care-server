@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.farm.fireflyserver.common.util.BaseCreatedTimeEntity;
+import org.farm.fireflyserver.senior.adapter.out.persistence.entity.SeniorEntity;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
@@ -39,7 +40,7 @@ public class Care extends BaseCreatedTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name= "senior_id")
     @Comment("돌봄 대상자")
-    private Senior senior;
+    private SeniorEntity seniorEntity;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
