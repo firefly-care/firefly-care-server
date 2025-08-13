@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.farm.fireflyserver.common.util.BaseCreatedTimeEntity;
+import org.farm.fireflyserver.senior.domain.Senior;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
