@@ -26,6 +26,7 @@ public class SecurityConfig {
     private static final String[] whiteList = { "/",
             "/token/**",
             "/senior/register/**",
+            "/led/save",
             };
 
     @Bean
