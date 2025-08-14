@@ -20,23 +20,7 @@ public class SeniorController {
 
     @PostMapping("/register")
     public BaseResponse<?> registerSenior(@RequestBody RegisterSeniorDto dto) {
-
-        RegisterSeniorCommand registerSeniorCommand = new RegisterSeniorCommand(
-                dto.name(),
-                dto.gender(),
-                dto.birthday(),
-                dto.address(),
-                dto.town(),
-                dto.phoneNum(),
-                dto.homePhoneNum(),
-                dto.zipCode(),
-                dto.guardianName(),
-                dto.guardianPhoneNum(),
-                dto.isHighRisk(),
-                dto.benefitType(),
-                dto.memo()
-        );
-        registerSeniorUseCase.registerSenior(registerSeniorCommand);
+        registerSeniorUseCase.registerSenior(RegisterSeniorCommand.from(dto));
         return BaseResponse.of(SuccessCode.CREATED, null);
     }
 }

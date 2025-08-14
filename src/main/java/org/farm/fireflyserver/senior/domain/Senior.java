@@ -1,5 +1,7 @@
 package org.farm.fireflyserver.senior.domain;
 
+import org.farm.fireflyserver.senior.application.command.RegisterSeniorCommand;
+
 import java.time.LocalDate;
 
 public record Senior(
@@ -17,4 +19,21 @@ public record Senior(
         BenefitType benefitType,
         String memo
 ) {
+    public static Senior from(RegisterSeniorCommand command) {
+        return new Senior(
+                command.name(),
+                command.gender(),
+                command.birthday(),
+                command.address(),
+                command.town(),
+                command.phoneNum(),
+                command.homePhoneNum(),
+                command.zipCode(),
+                command.guardianName(),
+                command.guardianPhoneNum(),
+                command.isHighRisk(),
+                command.benefitType(),
+                command.memo()
+        );
+    }
 }
