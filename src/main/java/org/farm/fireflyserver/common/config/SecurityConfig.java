@@ -25,6 +25,8 @@ public class SecurityConfig {
     // 토큰 없이 접근 가능한 URL 추가하기
     private static final String[] whiteList = { "/",
             "/token/**",
+            "/senior/register/**",
+            "/led/save",
             };
 
     @Bean
