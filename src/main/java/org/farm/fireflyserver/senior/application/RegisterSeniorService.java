@@ -17,22 +17,7 @@ public class RegisterSeniorService implements RegisterSeniorUseCase {
     @Override
     @Transactional
     public void registerSenior(RegisterSeniorCommand command) {
-        Senior senior = new Senior(
-                command.name(),
-                command.gender(),
-                command.birthday(),
-                command.address(),
-                command.town(),
-                command.phoneNum(),
-                command.homePhoneNum(),
-                command.zipCode(),
-                command.guardianName(),
-                command.guardianPhoneNum(),
-                command.isHighRisk(),
-                command.benefitType(),
-                command.memo()
-        );
-
+        Senior senior = Senior.from(command);
         seniorRepositoryPort.save(senior);
     }
 
