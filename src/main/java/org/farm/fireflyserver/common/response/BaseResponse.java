@@ -26,6 +26,13 @@ public class BaseResponse<T> {
                 .build();
     }
 
+    public static BaseResponse<?> of(SuccessCode successCode) {
+        return BaseResponse.builder()
+                .status(successCode.getHttpStatus().value())
+                .message(successCode.getMessage())
+                .build();
+    }
+
     public static BaseResponse<?> of(ErrorCode errorCode) {
         return BaseResponse.builder()
                 .status(errorCode.getHttpStatus().value())
