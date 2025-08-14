@@ -11,15 +11,16 @@ import org.farm.fireflyserver.domain.care.persistence.AccountRepository;
 import org.farm.fireflyserver.domain.care.persistence.AbsentResultRepository;
 import org.farm.fireflyserver.domain.care.persistence.CareRepository;
 import org.farm.fireflyserver.domain.care.persistence.CareResultRepository;
-import org.farm.fireflyserver.domain.care.persistence.SeniorRepository;
 import org.farm.fireflyserver.domain.care.persistence.entity.AbsentResult;
 import org.farm.fireflyserver.domain.care.persistence.entity.Account;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 import org.farm.fireflyserver.domain.care.persistence.entity.CareResult;
-import org.farm.fireflyserver.domain.care.persistence.entity.Senior;
+
 import org.farm.fireflyserver.domain.care.web.dto.AbsentCareDetailsDto;
 import org.farm.fireflyserver.domain.care.web.dto.AddCareDto;
 import org.farm.fireflyserver.domain.care.web.dto.NormalCareDetailsDto;
+import org.farm.fireflyserver.domain.senior.persistence.entity.Senior;
+import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorRepository;
 import org.springframework.stereotype.Service;
 
 @Service

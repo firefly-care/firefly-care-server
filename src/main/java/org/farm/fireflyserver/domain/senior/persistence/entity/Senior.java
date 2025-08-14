@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.farm.fireflyserver.domain.care.domain.Care;
 import org.farm.fireflyserver.common.util.BaseCreatedTimeEntity;
+import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDate;
@@ -80,7 +80,7 @@ public class Senior extends BaseCreatedTimeEntity {
     @Comment("서비스 이용 상태")
     private boolean isActive = true;
 
-    @OneToMany(mappedBy = "seniorEntity")
+    @OneToMany(mappedBy = "senior")
     private List<Care> careList = new ArrayList<>();
 
 

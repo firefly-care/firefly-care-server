@@ -25,6 +25,7 @@ public class Account {
     @Column(nullable = false, unique = true)
     private String id;
 
+    @Comment("비밀번호")
     @Column(nullable = false)
     private String pwd;
 
