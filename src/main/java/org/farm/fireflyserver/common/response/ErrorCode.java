@@ -34,6 +34,8 @@ public enum ErrorCode {
      */
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 리소스를 찾을 수 없습니다."),
     ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "엔티티를 찾을 수 없습니다."),
+    ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 계정을 찾을 수 없습니다."),
+    SENIOR_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 시니어를 찾을 수 없습니다."),
 
     /**
      * 405 Method Not Allowed
