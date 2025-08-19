@@ -8,7 +8,7 @@ import org.hibernate.annotations.Comment;
 
 @Table(name = "account")
 @Entity
-@Getter(AccessLevel.PROTECTED)
+@Getter
 @NoArgsConstructor
 public class Account {
 

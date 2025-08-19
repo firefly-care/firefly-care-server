@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Table(name = "care")
 @Entity
-@Getter(AccessLevel.PROTECTED)
+@Getter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 @AttributeOverride(name = "createdAt", column = @Column(name = "reg_date", columnDefinition = "TIMESTAMP COMMENT '등록일'"))
