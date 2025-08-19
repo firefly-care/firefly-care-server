@@ -9,7 +9,7 @@ import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 
 import java.time.LocalDateTime;
 
-public class CareDTO {
+public class CareDto {
     @Getter
     public class Register {
         private Long manager_id;

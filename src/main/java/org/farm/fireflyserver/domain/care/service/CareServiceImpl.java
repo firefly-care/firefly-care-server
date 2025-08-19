@@ -16,7 +16,7 @@ import org.farm.fireflyserver.domain.care.persistence.entity.Account;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 import org.farm.fireflyserver.domain.care.persistence.entity.CareResult;
 import org.farm.fireflyserver.domain.care.web.dto.AbsentCareDetailsDto;
-import org.farm.fireflyserver.domain.care.web.dto.CareDTO;
+import org.farm.fireflyserver.domain.care.web.dto.CareDto;
 import org.farm.fireflyserver.domain.care.web.dto.NormalCareDetailsDto;
 import org.farm.fireflyserver.domain.senior.persistence.entity.Senior;
 import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorRepository;
@@ -37,7 +37,7 @@ public class CareServiceImpl implements CareService {
     private final CareMapper careMapper;
 
     @Override
-    public void addCare(CareDTO.Register dto) {
+    public void addCare(CareDto.Register dto) {
         Account manager = accountRepository.findById(dto.getManager_id())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
         Senior senior = seniorRepository.findById(dto.getSenior_id())
@@ -72,11 +72,11 @@ public class CareServiceImpl implements CareService {
     }
 
     @Override
-    public List<CareDTO.Response> getAllCare() {
+    public List<CareDto.Response> getAllCare() {
         List<Care> cares = careRepository.findAll();
 
         return cares.stream()
-                .map(CareDTO.Response::from)
+                .map(CareDto.Response::from)
                 .collect(Collectors.toList());
     }
 }
