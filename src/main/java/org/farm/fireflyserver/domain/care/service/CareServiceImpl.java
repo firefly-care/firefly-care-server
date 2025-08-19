@@ -11,16 +11,15 @@ import org.farm.fireflyserver.domain.care.persistence.AccountRepository;
 import org.farm.fireflyserver.domain.care.persistence.AbsentResultRepository;
 import org.farm.fireflyserver.domain.care.persistence.CareRepository;
 import org.farm.fireflyserver.domain.care.persistence.CareResultRepository;
+import org.farm.fireflyserver.domain.care.persistence.CareSeniorRepository;
 import org.farm.fireflyserver.domain.care.persistence.entity.AbsentResult;
 import org.farm.fireflyserver.domain.care.persistence.entity.Account;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 import org.farm.fireflyserver.domain.care.persistence.entity.CareResult;
-
+import org.farm.fireflyserver.domain.care.persistence.entity.Senior;
 import org.farm.fireflyserver.domain.care.web.dto.AbsentCareDetailsDto;
 import org.farm.fireflyserver.domain.care.web.dto.CareDTO;
 import org.farm.fireflyserver.domain.care.web.dto.NormalCareDetailsDto;
-import org.farm.fireflyserver.domain.senior.persistence.entity.Senior;
-import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,10 +28,10 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class AddCareServiceImpl implements AddCareService {
+public class CareServiceImpl implements CareService {
     private final CareRepository careRepository;
     private final AccountRepository accountRepository;
-    private final SeniorRepository seniorRepository;
+    private final CareSeniorRepository careSeniorRepository;
     private final CareResultRepository careResultRepository;
     private final AbsentResultRepository absentResultRepository;
     private final CareMapper careMapper;
@@ -41,7 +40,7 @@ public class AddCareServiceImpl implements AddCareService {
     public void addCare(CareDTO.Register dto) {
         Account manager = accountRepository.findById(dto.getManager_id())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
-        Senior senior = seniorRepository.findById(dto.getSenior_id())
+        Senior senior = careSeniorRepository.findById(dto.getSenior_id())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SENIOR_NOT_FOUND));
 
         Result result;
