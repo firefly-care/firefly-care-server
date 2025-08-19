@@ -2,9 +2,11 @@ package org.farm.fireflyserver.domain.care.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.farm.fireflyserver.domain.account.persistence.entity.Account;
 import org.farm.fireflyserver.domain.care.Result;
 import org.farm.fireflyserver.domain.care.Type;
 import org.farm.fireflyserver.domain.senior.persistence.entity.Senior;
+
 
 import org.farm.fireflyserver.common.util.BaseCreatedTimeEntity;
 import org.hibernate.annotations.Comment;
