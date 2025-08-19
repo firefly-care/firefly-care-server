@@ -13,7 +13,7 @@ import java.util.List;
 
 @Table(name = "senior")
 @Entity
-@Getter(AccessLevel.PROTECTED)
+@Getter
 @NoArgsConstructor
 public class Senior {
 

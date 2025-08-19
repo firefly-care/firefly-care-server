@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Table(name = "care")
 @Entity
-@Getter(AccessLevel.PROTECTED)
+@Getter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 public class Care extends BaseCreatedTimeEntity {
