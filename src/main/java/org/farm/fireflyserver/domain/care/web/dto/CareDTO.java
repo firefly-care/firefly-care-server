@@ -48,7 +48,7 @@ public class CareDTO {
                     care.getManagerAccount().getName(),
                     care.getType(),
                     care.getContent(),
-                    String.valueOf(care.getSenior().getSeniorId()),
+                    String.valueOf(care.getSenior().getId()),
                     care.getSenior().getName(),
                     care.getResult()
             );
