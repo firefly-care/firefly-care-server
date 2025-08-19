@@ -3,7 +3,7 @@ package org.farm.fireflyserver.domain.care.web;
 import lombok.RequiredArgsConstructor;
 import org.farm.fireflyserver.common.response.BaseResponse;
 import org.farm.fireflyserver.common.response.SuccessCode;
-import org.farm.fireflyserver.domain.care.service.AddCareService;
+import org.farm.fireflyserver.domain.care.service.CareService;
 import org.farm.fireflyserver.domain.care.web.dto.CareDTO;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +13,7 @@ import java.util.List;
 @RequestMapping("/care")
 @RequiredArgsConstructor
 public class CareController {
-    private final AddCareService service;
+    private final CareService service;
 
     @GetMapping()
     public BaseResponse<?> getAllCare() {
