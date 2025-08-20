@@ -24,7 +24,7 @@ public class Senior extends BaseCreatedTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long seniorId;
 
     @Column(nullable = false, length = 10)
     @Comment("이름")
@@ -82,8 +82,6 @@ public class Senior extends BaseCreatedTimeEntity {
 
     @OneToMany(mappedBy = "senior")
     private List<Care> careList = new ArrayList<>();
-
-
 }
 
 

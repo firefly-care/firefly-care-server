@@ -7,13 +7,14 @@ import org.farm.fireflyserver.domain.care.Type;
 import org.farm.fireflyserver.domain.senior.persistence.entity.Senior;
 
 import org.farm.fireflyserver.common.util.BaseCreatedTimeEntity;
+import org.farm.fireflyserver.domain.senior.persistence.entity.Senior;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
 
 @Table(name = "care")
 @Entity
-@Getter(AccessLevel.PROTECTED)
+@Getter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 @AttributeOverride(name = "createdAt", column = @Column(name = "reg_date", columnDefinition = "TIMESTAMP COMMENT '등록일'"))
