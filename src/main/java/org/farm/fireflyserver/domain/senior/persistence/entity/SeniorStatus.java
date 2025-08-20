@@ -12,7 +12,7 @@ public class SeniorStatus {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long seniorStatusId;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @MapsId
