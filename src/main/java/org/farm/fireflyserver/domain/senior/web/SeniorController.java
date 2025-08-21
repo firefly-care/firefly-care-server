@@ -5,10 +5,7 @@ import org.farm.fireflyserver.common.response.BaseResponse;
 import org.farm.fireflyserver.common.response.SuccessCode;
 import org.farm.fireflyserver.domain.senior.service.SeniorService;
 import org.farm.fireflyserver.domain.senior.web.dto.request.RegisterSeniorDto;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/senior")
@@ -22,4 +19,9 @@ public class SeniorController {
         seniorService.registerSenior(dto);
         return BaseResponse.of(SuccessCode.CREATED, null);
     }
+
+//    @GetMapping("/")
+//    public BaseResponse<?> findSenior() {
+//
+//    }
 }
