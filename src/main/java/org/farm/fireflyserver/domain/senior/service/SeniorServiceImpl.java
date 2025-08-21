@@ -29,34 +29,57 @@ public class SeniorServiceImpl implements SeniorService {
         seniorRepository.save(senior);
     }
 
+    // 대상자 목록 정보 조회
     @Override
     public List<SeniorInfoDto> getSeniorInfo() {
         List<Senior> seniors = seniorRepository.findAll();
 
         return seniors.stream()
                 .map(senior -> {
+                    String[] manager = getManagerInfo(senior);
+                    SeniorStateDto seniorState = getSeniorState(senior);
 
-                    // 가장 최근 돌봄 이력
-                    Care latestCare = senior.getCareList().stream()
-                            .max(Comparator.comparing(Care::getDate))
-                            .orElse(null);
-
-                    String managerName = null;
-                    String managerPhone = null;
-                    SeniorStateDto seniorState = null;
-
-                    if (latestCare != null) {
-                        managerName = latestCare.getManagerAccount().getName();
-                        managerPhone = latestCare.getManagerAccount().getPhoneNum();
-                    }
-
-                    if (senior.getSeniorStatus() != null) {
-                        seniorState = SeniorStateDto.from(senior.getSeniorStatus());
-                    }
-
-                    return SeniorInfoDto.of(senior, managerName, managerPhone, seniorState);
+                    return SeniorInfoDto.of(senior, manager[0], manager[1], seniorState);
                 })
                 .collect(Collectors.toList());
     }
+
+    private String[] getManagerInfo(Senior senior) {
+        // 가장 최근 돌봄 이력
+        Care latestCare = senior.getCareList().stream()
+                .max(Comparator.comparing(Care::getDate))
+                .orElse(null);
+
+        if (latestCare == null) {
+            return new String[]{null, null};
+        }
+
+        return new String[]{
+                latestCare.getManagerAccount().getName(),
+                latestCare.getManagerAccount().getPhoneNum()
+        };
+    }
+
+    private SeniorStateDto getSeniorState(Senior senior) {
+        return senior.getSeniorStatus() != null
+                ? SeniorStateDto.from(senior.getSeniorStatus())
+                : null;
+    }
+
+
+    // 대상자 검색
+    @Override
+    public List<SeniorInfoDto> searchSeniors(Boolean isActive, String keywordType, String keyword) {
+        List<Senior> seniors = seniorRepository.searchSeniors(isActive, keywordType, keyword);
+
+        return seniors.stream()
+                .map(s -> {
+                    String[] manager = getManagerInfo(s);
+                    SeniorStateDto seniorState = getSeniorState(s);
+                    return SeniorInfoDto.of(s, manager[0], manager[1], seniorState);
+                })
+                .collect(Collectors.toList());
+    }
+
 
 }
