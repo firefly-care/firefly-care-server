@@ -15,18 +15,20 @@ import org.farm.fireflyserver.domain.care.persistence.CareResultRepository;
 import org.farm.fireflyserver.domain.care.persistence.entity.AbsentResult;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 import org.farm.fireflyserver.domain.care.persistence.entity.CareResult;
-
 import org.farm.fireflyserver.domain.care.web.dto.AbsentCareDetailsDto;
-import org.farm.fireflyserver.domain.care.web.dto.AddCareDto;
+import org.farm.fireflyserver.domain.care.web.dto.CareDto;
 import org.farm.fireflyserver.domain.care.web.dto.NormalCareDetailsDto;
 import org.farm.fireflyserver.domain.senior.persistence.entity.Senior;
 import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class AddCareServiceImpl implements AddCareService {
+public class CareServiceImpl implements CareService {
     private final CareRepository careRepository;
     private final AccountRepository accountRepository;
     private final SeniorRepository seniorRepository;
@@ -35,7 +37,7 @@ public class AddCareServiceImpl implements AddCareService {
     private final CareMapper careMapper;
 
     @Override
-    public void addCare(AddCareDto dto) {
+    public void addCare(CareDto.Register dto) {
         Account manager = accountRepository.findById(dto.getManager_id())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
         Senior senior = seniorRepository.findById(dto.getSenior_id())
@@ -67,5 +69,14 @@ public class AddCareServiceImpl implements AddCareService {
             AbsentResult absentResult = careMapper.toAbsentResult(details, care);
             absentResultRepository.save(absentResult);
         }
+    }
+
+    @Override
+    public List<CareDto.Response> getAllCare() {
+        List<Care> cares = careRepository.findAll();
+
+        return cares.stream()
+                .map(CareDto.Response::from)
+                .collect(Collectors.toList());
     }
 }

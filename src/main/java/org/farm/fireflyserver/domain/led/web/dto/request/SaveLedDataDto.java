@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 
 public record SaveLedDataDto(
         SensorGbn sensorGbn,
-        Timestamp regDt,
-        String ledMtchnSn
+        Long trgSn,
+        Long snsrSn
 ) {
 }
