@@ -50,6 +50,13 @@ dependencies {
     //mapStruct
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
+    //spring batch
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+
+    //spring-doc(swagger)
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.0'
+
 }
 
 tasks.named('test') {

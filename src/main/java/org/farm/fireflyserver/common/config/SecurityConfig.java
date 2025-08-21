@@ -25,10 +25,18 @@ public class SecurityConfig {
 
     // 토큰 없이 접근 가능한 URL 추가하기
     private static final String[] whiteList = { "/",
+            /* swagger */
+            "swagger/**",
+            "swagger-ui/**",
+            "v3/api-docs/**",
+
+            /* api */
             "/token/**",
-            "/senior/register/**",
+            "/senior/**",
             "/led/save",
             "/account/login",
+
+
             };
 
     @Bean
