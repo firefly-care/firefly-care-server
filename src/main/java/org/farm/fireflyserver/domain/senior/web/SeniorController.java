@@ -5,10 +5,10 @@ import org.farm.fireflyserver.common.response.BaseResponse;
 import org.farm.fireflyserver.common.response.SuccessCode;
 import org.farm.fireflyserver.domain.senior.service.SeniorService;
 import org.farm.fireflyserver.domain.senior.web.dto.request.RegisterSeniorDto;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorInfoDto;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/senior")
@@ -17,9 +17,23 @@ public class SeniorController {
 
     private final SeniorService seniorService;
 
-    @PostMapping("/register")
+    //대상자 등록
+    @PostMapping
     public BaseResponse<?> registerSenior(@RequestBody RegisterSeniorDto dto) {
         seniorService.registerSenior(dto);
         return BaseResponse.of(SuccessCode.CREATED, null);
     }
+
+
+    // 대상자 목록 정보 조회
+    //TODO : LED 데이터 정보 추가
+    @GetMapping
+    public BaseResponse<?>getSeniors() {
+        List<SeniorInfoDto> seniorInfo = seniorService.getSeniorInfo();
+        return BaseResponse.of(SuccessCode.OK, seniorInfo);
+    }
+
+
+
+
 }
