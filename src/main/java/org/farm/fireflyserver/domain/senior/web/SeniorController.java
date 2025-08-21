@@ -33,7 +33,16 @@ public class SeniorController {
         return BaseResponse.of(SuccessCode.OK, seniorInfo);
     }
 
-
-
+    // 대상자 검색
+    @GetMapping
+    @RequestMapping("/search")
+    public BaseResponse<?> searchSeniors(
+            @RequestParam(required = false)  Boolean isActive,
+            @RequestParam(required = false) String keywordType,
+            @RequestParam(required = false)  String keyword
+           ) {
+        List<SeniorInfoDto> seniorInfo = seniorService.searchSeniors(isActive,keywordType,keyword);
+        return BaseResponse.of(SuccessCode.OK, seniorInfo);
+    }
 
 }

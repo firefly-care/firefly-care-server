@@ -9,4 +9,5 @@ public interface SeniorService {
     void registerSenior(RegisterSeniorDto dto);
     List<SeniorInfoDto> getSeniorInfo();
 
+    List<SeniorInfoDto> searchSeniors( Boolean isActive, String keywordType, String keyword);
 }
