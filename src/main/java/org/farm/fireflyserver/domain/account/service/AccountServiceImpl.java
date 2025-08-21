@@ -1,10 +1,12 @@
 package org.farm.fireflyserver.domain.account.service;
 
 import lombok.RequiredArgsConstructor;
+import org.farm.fireflyserver.common.config.jwt.JwtProvider;
 import org.farm.fireflyserver.common.exception.EntityNotFoundException;
 import org.farm.fireflyserver.domain.account.persistence.AccountRepository;
 import org.farm.fireflyserver.domain.account.persistence.entity.Account;
 import org.farm.fireflyserver.domain.account.web.dto.LoginDto;
+import org.farm.fireflyserver.domain.account.web.dto.TokenDto;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,9 +22,11 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
+
 
     @Override
-    public void login(LoginDto loginDto) {
+    public TokenDto login(LoginDto loginDto) {
         String id = loginDto.id();
         String password = loginDto.password();
 
@@ -33,5 +37,11 @@ public class AccountServiceImpl implements AccountService {
             throw new EntityNotFoundException(PASSWORD_NOT_FOUND);
         }
 
+        return new TokenDto(getAccessToken(account));
+
+    }
+
+    private String getAccessToken(Account account) {
+        return jwtProvider.getIssueToken(account.getAccountId(), true);
     }
 }

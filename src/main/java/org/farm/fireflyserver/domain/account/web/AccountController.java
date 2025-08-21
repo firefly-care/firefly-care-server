@@ -5,6 +5,7 @@ import org.farm.fireflyserver.common.response.BaseResponse;
 import org.farm.fireflyserver.common.response.SuccessCode;
 import org.farm.fireflyserver.domain.account.service.AccountService;
 import org.farm.fireflyserver.domain.account.web.dto.LoginDto;
+import org.farm.fireflyserver.domain.account.web.dto.TokenDto;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +20,7 @@ public class AccountController {
 
     @PostMapping("/login")
     public BaseResponse<?> login(@RequestBody LoginDto loginDto) {
-        accountService.login(loginDto);
-        return BaseResponse.of(SuccessCode.OK, null);
+        TokenDto token = accountService.login(loginDto);
+        return BaseResponse.of(SuccessCode.OK, token);
     }
 }
