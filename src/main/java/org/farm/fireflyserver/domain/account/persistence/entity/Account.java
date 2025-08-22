@@ -1,4 +1,4 @@
-package org.farm.fireflyserver.domain.care.persistence.entity;
+package org.farm.fireflyserver.domain.account.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,7 +12,8 @@ import org.hibernate.annotations.Comment;
 public class Account {
 
     @Id
-    private String accountId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long accountId;
 
     @Comment("이름")
     private String name;

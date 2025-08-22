@@ -36,6 +36,8 @@ public enum ErrorCode {
     ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "엔티티를 찾을 수 없습니다."),
     ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 계정을 찾을 수 없습니다."),
     SENIOR_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 시니어를 찾을 수 없습니다."),
+    ACCOUNT_ID_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 계정 아이디를 찾을 수 없습니다."),
+    PASSWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 비밀번호를 찾을 수 없습니다."),
 
     /**
      * 405 Method Not Allowed
@@ -58,14 +60,7 @@ public enum ErrorCode {
      */
     AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED, "사용자 인증에 실패하였습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
-    USER_ALREADY_EXISTS(HttpStatus.CONFLICT, "다른 소셜 계정으로 이미 가입된 사용자입니다."),
-
-    /**
-     * Oauth Error
-     */
-    OAUTH_TOKEN_REQUEST_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "OAuth 토큰 요청에 실패하였습니다."),
-    OAUTH_USER_RESOURCE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "OAuth 사용자 정보 조회에 실패하였습니다."),
-    JSON_PARSING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "JSON 파싱에 실패하였습니다.");
+    USER_ALREADY_EXISTS(HttpStatus.CONFLICT, "다른 소셜 계정으로 이미 가입된 사용자입니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

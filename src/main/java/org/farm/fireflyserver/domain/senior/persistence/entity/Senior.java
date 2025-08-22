@@ -82,6 +82,11 @@ public class Senior extends BaseCreatedTimeEntity {
 
     @OneToMany(mappedBy = "senior")
     private List<Care> careList = new ArrayList<>();
+
+    @OneToOne(mappedBy = "senior")
+    private SeniorStatus seniorStatus;
+
+
 }
 
 

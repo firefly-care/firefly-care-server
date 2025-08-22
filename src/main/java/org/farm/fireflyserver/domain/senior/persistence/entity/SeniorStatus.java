@@ -7,7 +7,7 @@ import org.hibernate.annotations.Comment;
 
 @Table(name = "senior_status")
 @Entity
-@Getter(AccessLevel.PROTECTED)
+@Getter
 public class SeniorStatus {
 
     @Id
@@ -17,7 +17,7 @@ public class SeniorStatus {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @MapsId
     @JoinColumn(name = "senior_id")
-    private Senior seniorEntity;
+    private Senior senior;
 
     @Comment("위험 지수")
     private Double dangerRt;
@@ -36,4 +36,8 @@ public class SeniorStatus {
 
     @Comment("마지막 활동 시간")
     private Integer lastActTime;
+
+    //enum으로 변경 예정
+    @Comment("이상징후")
+    private String state;
 }

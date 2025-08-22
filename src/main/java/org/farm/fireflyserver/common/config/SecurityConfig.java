@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -24,9 +25,18 @@ public class SecurityConfig {
 
     // 토큰 없이 접근 가능한 URL 추가하기
     private static final String[] whiteList = { "/",
+            /* swagger */
+            "swagger/**",
+            "swagger-ui/**",
+            "v3/api-docs/**",
+
+            /* api */
             "/token/**",
-            "/senior/register/**",
+            "/senior/**",
             "/led/save",
+            "/account/login",
+
+
             };
 
     @Bean
@@ -50,5 +60,11 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
                 .build();
+    }
+
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
