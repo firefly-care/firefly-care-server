@@ -1,5 +1,8 @@
 package org.farm.fireflyserver.domain.senior.web;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.farm.fireflyserver.common.response.BaseResponse;
 import org.farm.fireflyserver.common.response.SuccessCode;
@@ -13,11 +16,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/senior")
 @RequiredArgsConstructor
+@Tag(name = "Senior", description = "대상자 관련 AP" +
+        "I")
 public class SeniorController {
 
     private final SeniorService seniorService;
 
-    //대상자 등록
+    // 대상자 등록
+    @Operation(summary = "대상자 등록", description = "신규 대상자 등록(구현X)")
     @PostMapping
     public BaseResponse<?> registerSenior(@RequestBody RegisterSeniorDto dto) {
         seniorService.registerSenior(dto);
@@ -25,8 +31,8 @@ public class SeniorController {
     }
 
 
-    // 대상자 목록 정보 조회
-    //TODO : LED 데이터 정보 추가
+    // 대상자 목록 조회
+    @Operation(summary = "대상자 관리 페이지 - 대상자 목록 조회", description = "전체 대상자 정보 조회")
     @GetMapping
     public BaseResponse<?>getSeniors() {
         List<SeniorInfoDto> seniorInfo = seniorService.getSeniorInfo();
@@ -34,12 +40,14 @@ public class SeniorController {
     }
 
     // 대상자 검색
-    @GetMapping
-    @RequestMapping("/search")
+    @Operation(summary = "대상자 관리 페이지 - 대상자 검색",
+            description = "서비스 진행 여부 및 키워드 조건으로 대상자를 검색(현재는 문자열인 값들의 검색 지원하는데 수정 가능)")
+    @GetMapping("/search")
     public BaseResponse<?> searchSeniors(
-            @RequestParam(required = false)  Boolean isActive,
+            @Parameter(description = "서비스 진행 여부") @RequestParam(required = false) Boolean isActive,
+            @Parameter(description = "검색 타입 : name(이름), phone(연락처), town(읍면동), address(주소), managerName(담당자), magagerPhone(담당자 연락처), state(이상징후)")
             @RequestParam(required = false) String keywordType,
-            @RequestParam(required = false)  String keyword
+            @Parameter(description = "검색 키워드") @RequestParam(required = false) String keyword
            ) {
         List<SeniorInfoDto> seniorInfo = seniorService.searchSeniors(isActive,keywordType,keyword);
         return BaseResponse.of(SuccessCode.OK, seniorInfo);
