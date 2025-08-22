@@ -79,4 +79,13 @@ public class CareServiceImpl implements CareService {
                 .map(CareDto.Response::from)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<CareDto.Response> searchCare(CareDto.SearchRequest dto) {
+        List<Care> list = careRepository.search(dto);
+
+        return list.stream()
+                .map(CareDto.Response::from)
+                .collect(Collectors.toList());
+    }
 }

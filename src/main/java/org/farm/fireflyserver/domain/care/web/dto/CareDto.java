@@ -7,6 +7,7 @@ import org.farm.fireflyserver.domain.care.Result;
 import org.farm.fireflyserver.domain.care.Type;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class CareDto {
@@ -53,5 +54,14 @@ public class CareDto {
                     care.getResult()
             );
         }
+    }
+
+    public record SearchRequest (
+            Type type,
+            Result result,
+            LocalDate startDate,
+            LocalDate endDate,
+            String searchTerm
+    ) {
     }
 }
