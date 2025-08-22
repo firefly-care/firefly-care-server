@@ -4,13 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.farm.fireflyserver.domain.care.persistence.CareRepository;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 import org.farm.fireflyserver.domain.monitoring.web.dto.*;
+import org.farm.fireflyserver.domain.senior.persistence.entity.DangerLevel;
 import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -20,12 +23,14 @@ public class MonitoringServiceImpl implements MonitoringService {
     private final SeniorRepository seniorRepository;
     private final CareRepository careRepository;
 
+    //메인홈 조회
     @Override
     public MainHomeDto getMainHome() {
         SeniorCountDto seniorCount = getSeniorCount();
         SeniorLedStateCountDto seniorStateCount = getSeniorStateCount();
         MonthlyCareStateDto monthlyCareState = getMonthlyCareState();
-        return MainHomeDto.of(seniorCount, seniorStateCount,monthlyCareState);
+        List<TownStateDto> townState = getTownStateCount();
+        return MainHomeDto.of(seniorCount, seniorStateCount, monthlyCareState, townState);
 
     }
 
@@ -55,37 +60,28 @@ public class MonitoringServiceImpl implements MonitoringService {
     // Led 이상 탐지 현황
     private SeniorLedStateCountDto getSeniorStateCount() {
         List<Object[]> results = seniorRepository.countByDangerLevel();
-        int ledUseCount = seniorRepository.countByIsActiveTrueAndIsLedUseTrue();
 
-        //이상 탐지 통계
-        int[] counts = calculateStateCounts(results);
-
-        // 대상자별 상태 정보
-        List<SeniorLedStateDto> seniorLedStates = convertToLedStateDto();
-
-        return SeniorLedStateCountDto.of(ledUseCount, counts[0], counts[1], counts[2], counts[3], seniorLedStates);
-    }
-
-    private int[] calculateStateCounts(List<Object[]> results) {
-        int normalCount = 0, interestCount = 0, cautionCount = 0, dangerCount = 0;
+        int normalCount = 0, attentionCount = 0, cautionCount = 0, dangerCount = 0;
 
         for (Object[] row : results) {
-            String dangerLevel = (String) row[0];
+            DangerLevel level = (DangerLevel) row[0];
             int count = ((Long) row[1]).intValue();
 
-            //enum으로 수정 필요
-            if (dangerLevel == null || dangerLevel.equals("정상")) {
-                normalCount = count;
-            } else if (dangerLevel.equals("관심")) {
-                interestCount = count;
-            } else if (dangerLevel.equals("위험")) {
-                dangerCount = count;
-            } else if (dangerLevel.equals("주의")) {
-                cautionCount = count;
+            if (level == null) level = DangerLevel.NORMAL;
+
+            switch (level) {
+                case NORMAL -> normalCount = count;
+                case ATTENTION -> attentionCount = count;
+                case CAUTION -> cautionCount = count;
+                case DANGER -> dangerCount = count;
             }
         }
 
-        return new int[]{normalCount, interestCount, cautionCount, dangerCount};
+        int ledUseCount = seniorRepository.countByIsActiveTrueAndIsLedUseTrue();
+        List<SeniorLedStateDto> seniorLedStates = convertToLedStateDto();
+
+        return SeniorLedStateCountDto.of(ledUseCount, normalCount, attentionCount, cautionCount, dangerCount, seniorLedStates
+        );
     }
 
     private List<SeniorLedStateDto> convertToLedStateDto() {
@@ -104,6 +100,7 @@ public class MonitoringServiceImpl implements MonitoringService {
     public MonthlyCareStateDto getMonthlyCareState() {
         int year = LocalDate.now().getYear();
         int month = LocalDate.now().getMonthValue();
+        String monthStr = String.format("%04d.%02d", year, month);
 
         List<Care> cares = getCaresByMonth(year, month);
 
@@ -119,7 +116,6 @@ public class MonitoringServiceImpl implements MonitoringService {
         }
 
         int careCount = callCount + visitCount + emergencyCount;
-        String monthStr = String.format("%04d.%02d", year, month);
 
         return MonthlyCareStateDto.of(monthStr, totalCount, careCount, callCount, visitCount, emergencyCount);
     }
@@ -135,5 +131,98 @@ public class MonitoringServiceImpl implements MonitoringService {
                 endDate.atTime(23, 59, 59)
         );
     }
+
+    //TODO : 필터링으로 처리
+    // 지역별 대상자 상태 조회
+    public List<TownStateDto> getTownStateCount() {
+        Map<String, int[]> townMap = new HashMap<>();
+
+        // 마지막 활동 시간 기준
+        getLastActTimeCounts(townMap);
+
+        // 이상징후 기준
+        getStateCounts(townMap);
+
+        // 위기 등급 기준
+        getDangerLevelCounts(townMap);
+
+        // 4. DTO 변환
+        return townMap.entrySet().stream()
+                .map(entry -> {
+                    int[] c = entry.getValue();
+                    return TownStateDto.of(
+                            entry.getKey(),
+                            c[0], c[1], c[2], c[3],   // 마지막 활동 시간
+                            c[4], c[5], c[6], c[7],   // 이상징후
+                            c[8], c[9], c[10], c[11]  // 위기등급
+                    );
+                })
+                .toList();
+    }
+
+    private void getLastActTimeCounts(Map<String, int[]> townMap) {
+        List<Object[]> results = seniorRepository.countByTownAndLastActTime();
+        for (Object[] row : results) {
+            String town = (String) row[0];
+            Integer hours = (Integer) row[1];
+            Long count = (Long) row[2];
+
+            int[] counts = townMap.getOrDefault(town, new int[12]);
+            int slot = getTimeSlotIndex(hours);
+            counts[slot] += count.intValue();
+            townMap.put(town, counts);
+        }
+    }
+
+    //시간 차이 변환
+    private int getTimeSlotIndex(int hours) {
+        if (hours < 24) return 0;
+        if (hours < 48) return 1;
+        if (hours < 72) return 2;
+        return 3;
+    }
+
+    private void getStateCounts(Map<String, int[]> townMap) {
+        List<Object[]> results = seniorRepository.countByTownAndState();
+        for (Object[] row : results) {
+            String town = (String) row[0];
+            String state = (String) row[1];
+            Long count = (Long) row[2];
+
+            if (state == null) continue;
+
+            int[] counts = townMap.getOrDefault(town, new int[12]);
+            switch (state) {
+                case "수면장애" -> counts[4] += count.intValue();
+                case "인지저하" -> counts[5] += count.intValue();
+                case "무기력증" -> counts[6] += count.intValue();
+                case "장시간 미활동" -> counts[7] += count.intValue();
+            }
+            townMap.put(town, counts);
+        }
+    }
+
+    private void getDangerLevelCounts(Map<String, int[]> townMap) {
+        List<Object[]> results = seniorRepository.countByTownAndDangerLevel();
+        for (Object[] row : results) {
+            String town = (String) row[0];
+
+            DangerLevel level = (DangerLevel) row[1];
+
+            Long count = (Long) row[2];
+
+            int[] counts = townMap.getOrDefault(town, new int[12]);
+
+            switch (level) {
+                case NORMAL -> counts[8] += count.intValue();
+                case ATTENTION -> counts[9] += count.intValue();
+                case CAUTION -> counts[10] += count.intValue();
+                case DANGER -> counts[11] += count.intValue();
+            }
+
+            townMap.put(town, counts);
+        }
+    }
+
 
 }

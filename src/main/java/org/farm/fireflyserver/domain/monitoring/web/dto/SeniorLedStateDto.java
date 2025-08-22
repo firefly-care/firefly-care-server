@@ -13,7 +13,7 @@ public record SeniorLedStateDto(
         return new SeniorLedStateDto(
                 senior.getName(),
                 managerName,
-                senior.getSeniorStatus().getDangerLevel(),
+                senior.getSeniorStatus().getDangerLevel().getLabel(),
                 senior.getSeniorStatus().getLastActTime(),
                 senior.getSeniorStatus().getState()
         );
