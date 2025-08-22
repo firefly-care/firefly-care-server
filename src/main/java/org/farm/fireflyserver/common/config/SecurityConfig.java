@@ -35,7 +35,7 @@ public class SecurityConfig {
             "/senior/**",
             "/led/save",
             "/account/login",
-
+            "/monitoring/**"
 
             };
 

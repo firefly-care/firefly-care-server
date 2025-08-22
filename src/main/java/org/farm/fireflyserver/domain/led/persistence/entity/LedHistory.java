@@ -1,16 +1,16 @@
 package org.farm.fireflyserver.domain.led.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
 
-@Getter(AccessLevel.PROTECTED)
+@Getter
 @NoArgsConstructor
 @Entity
+@Builder
+@AllArgsConstructor
 @Table(name = "led_history")
 public class LedHistory {
 
@@ -26,5 +26,5 @@ public class LedHistory {
     private SensorGbn sensorGbn;
 
     @Comment("LED 점등 시각")
-    private LocalDateTime OnDate;
+    private LocalDateTime onDate;
 }

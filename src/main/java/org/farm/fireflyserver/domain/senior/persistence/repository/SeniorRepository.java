@@ -9,6 +9,10 @@ import java.util.List;
 
 public interface SeniorRepository extends JpaRepository<Senior, Long> {
 
+    int countByIsActiveTrue();
+    int countByIsActiveTrueAndIsAmiUseTrue();
+    int countByIsActiveTrueAndIsLedUseTrue();
+
     @Query("""
        SELECT DISTINCT s FROM Senior s
        LEFT JOIN s.careList c
@@ -32,4 +36,9 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
             @Param("keyword") String keyword
     );
 
+    @Query("SELECT s.town, COUNT(s) " +
+            "FROM Senior s " +
+            "WHERE s.isActive = true " +
+            "GROUP BY s.town")
+    List<Object[]> countByTown();
 }
