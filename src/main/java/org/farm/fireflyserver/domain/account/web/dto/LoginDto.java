@@ -1,8 +1,11 @@
 package org.farm.fireflyserver.domain.account.web.dto;
 
-public record LoginDto(
-    String id,
-    String password
+import io.swagger.v3.oas.annotations.media.Schema;
 
+public record LoginDto(
+        @Schema(example = "manager_kim")
+        String id,
+        @Schema(example = "password123")
+        String password
 ) {
 }

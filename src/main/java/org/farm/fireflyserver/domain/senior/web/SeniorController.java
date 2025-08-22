@@ -23,7 +23,7 @@ public class SeniorController {
     private final SeniorService seniorService;
 
     // 대상자 등록
-    @Operation(summary = "대상자 등록", description = "신규 대상자 등록(구현X)")
+    @Operation(summary = "대상자 등록(구현 X)", description = "신규 대상자 등록")
     @PostMapping
     public BaseResponse<?> registerSenior(@RequestBody RegisterSeniorDto dto) {
         seniorService.registerSenior(dto);

@@ -1,5 +1,7 @@
 package org.farm.fireflyserver.domain.led.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.farm.fireflyserver.common.response.BaseResponse;
 import org.farm.fireflyserver.common.response.SuccessCode;
@@ -13,12 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/led")
+@Tag(name = "Led", description = "LED 관련 API")
 public class LedController {
 
     private final LedService ledService;
 
     //임시로 토큰 없이 저장
-    @PostMapping("/save")
+    @Operation(summary = "LED 데이터 저장(구현 X)")
+            @PostMapping("/save")
     BaseResponse<?> saveLedData(@RequestBody SaveLedDataDto dto){
         ledService.saveLedData(dto);
         return BaseResponse.of(SuccessCode.CREATED, null);
