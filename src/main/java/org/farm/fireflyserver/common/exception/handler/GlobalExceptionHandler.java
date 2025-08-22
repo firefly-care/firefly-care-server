@@ -13,10 +13,21 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    /**
+     * 잘못된 URL 요청 시 발생하는 error를 handling합니다.
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    protected ResponseEntity<BaseResponse> handleNoResourceFoundException(NoResourceFoundException e) {
+        log.error(">>> handle: NoResourceFoundException ", e);
+        final BaseResponse errorBaseResponse = BaseResponse.of(ErrorCode.RESOURCE_NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBaseResponse);
+    }
+
     /**
      * Valid & Validated annotation의 binding error를 handling합니다.
      */
