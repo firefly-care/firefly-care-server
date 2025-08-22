@@ -15,6 +15,14 @@ public enum SensorGbn {
     private final String code;
     private final String desc;
 
-    //코드로 저장시 Convert 필요
+    //code->enum
+    public static SensorGbn fromCode(String code) {
+        for (SensorGbn sensorGbn : SensorGbn.values()) {
+            if (sensorGbn.getCode().equals(code)) {
+                return sensorGbn;
+            }
+        }
+        throw new IllegalArgumentException();
+    }
 
 }
