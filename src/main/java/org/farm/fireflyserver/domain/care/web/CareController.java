@@ -28,4 +28,11 @@ public class CareController {
 
         return BaseResponse.of(SuccessCode.OK);
     }
+
+    @GetMapping("/search")
+    public BaseResponse<?> searchCare(@ModelAttribute CareDto.SearchRequest dto) {
+        List<CareDto.Response> response = service.searchCare(dto);
+
+        return BaseResponse.of(SuccessCode.OK, response);
+    }
 }

@@ -20,5 +20,4 @@ public class LedService {
         LedData ledData= ledMapper.toEntity(dto);
         ledDataRepository.save(ledData);
     }
-
 }
