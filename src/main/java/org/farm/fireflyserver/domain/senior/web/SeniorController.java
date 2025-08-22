@@ -34,8 +34,7 @@ public class SeniorController {
     }
 
     // 대상자 검색
-    @GetMapping
-    @RequestMapping("/search")
+    @GetMapping("/search")
     public BaseResponse<?> searchSeniors(
             @RequestParam(required = false)  Boolean isActive,
             @RequestParam(required = false) String keywordType,
