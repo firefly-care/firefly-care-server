@@ -41,6 +41,7 @@ public class SeniorStatus {
     @Comment("이상징후")
     private String state;
 
+    @Enumerated(EnumType.STRING)
     @Comment("위험 등급")
-    private String dangerLevel;
+    private DangerLevel dangerLevel;
 }
