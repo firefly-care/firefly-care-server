@@ -40,4 +40,7 @@ public class SeniorStatus {
     //enum으로 변경 예정
     @Comment("이상징후")
     private String state;
+
+    @Comment("위험 등급")
+    private String dangerLevel;
 }

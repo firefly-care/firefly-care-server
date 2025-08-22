@@ -12,6 +12,7 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
     int countByIsActiveTrue();
     int countByIsActiveTrueAndIsAmiUseTrue();
     int countByIsActiveTrueAndIsLedUseTrue();
+    List<Senior> findByIsActiveTrueAndIsLedUseTrue();
 
     @Query("""
        SELECT DISTINCT s FROM Senior s
@@ -41,4 +42,13 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
             "WHERE s.isActive = true " +
             "GROUP BY s.town")
     List<Object[]> countByTown();
+
+    @Query("""
+    SELECT s.seniorStatus.dangerLevel, COUNT(s)
+    FROM Senior s
+    WHERE s.isActive = true AND s.isLedUse = true
+    GROUP BY s.seniorStatus.dangerLevel
+""")
+    List<Object[]> countByDangerLevel();
+
 }

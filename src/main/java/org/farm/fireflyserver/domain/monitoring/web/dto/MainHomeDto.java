@@ -1,9 +1,11 @@
 package org.farm.fireflyserver.domain.monitoring.web.dto;
 
 public record MainHomeDto(
-    SeniorCountDto seniorCount
+    SeniorCountDto seniorCount,
+    SeniorLedStateCountDto seniorStateCount
 ) {
-    public static MainHomeDto of(SeniorCountDto seniorCount) {
-        return new MainHomeDto(seniorCount);
+    public static MainHomeDto of(SeniorCountDto seniorCount, SeniorLedStateCountDto seniorStateCount) {
+
+        return new MainHomeDto(seniorCount,seniorStateCount);
     }
 }
