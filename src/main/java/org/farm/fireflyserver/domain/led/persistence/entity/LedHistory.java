@@ -6,7 +6,7 @@ import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
 
-@Getter(AccessLevel.PROTECTED)
+@Getter
 @NoArgsConstructor
 @Entity
 @Builder

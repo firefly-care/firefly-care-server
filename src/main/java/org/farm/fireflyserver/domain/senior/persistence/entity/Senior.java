@@ -81,6 +81,12 @@ public class Senior extends BaseCreatedTimeEntity {
     @Comment("서비스 이용 상태")
     private boolean isActive = true;
 
+    @Comment("LED 사용 여부")
+    private boolean isLedUse;
+
+    @Comment("AMI 사용 여부")
+    private boolean isAmiUse;
+
     @OneToMany(mappedBy = "senior")
     private List<Care> careList = new ArrayList<>();
 
@@ -90,5 +96,3 @@ public class Senior extends BaseCreatedTimeEntity {
     @OneToMany(mappedBy = "senior")
     private List<LedState> ledStates = new ArrayList<>();
 }
-
-

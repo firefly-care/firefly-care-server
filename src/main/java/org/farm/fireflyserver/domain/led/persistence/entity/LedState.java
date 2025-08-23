@@ -27,7 +27,6 @@ public class LedState extends BaseUpdatedTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "senior_id", nullable = false)
-    @Comment("대상자 식별 코드")
+    @Comment("대상자 식별 정보")
     private Senior senior;
-
 }

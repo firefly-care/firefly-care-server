@@ -9,6 +9,12 @@ import java.util.List;
 
 public interface SeniorRepository extends JpaRepository<Senior, Long> {
 
+    List<Senior> findAllByIsActiveTrue();
+    int countByIsActiveTrue();
+    List<Senior> findByIsActiveTrueAndIsLedUseTrue();
+    int countByIsActiveTrueAndIsLedUseTrue();
+    int countByIsActiveTrueAndIsAmiUseTrue();
+
     @Query("""
        SELECT DISTINCT s FROM Senior s
        LEFT JOIN s.careList c
@@ -32,4 +38,49 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
             @Param("keyword") String keyword
     );
 
+    @Query("""
+    SELECT s.town, COUNT(s)
+    FROM Senior s
+    WHERE s.isActive = true
+    GROUP BY s.town
+""")
+    List<Object[]> countByTown();
+
+    @Query("""
+    SELECT s.seniorStatus.dangerLevel, COUNT(s)
+    FROM Senior s
+    WHERE s.isActive = true AND s.isLedUse = true
+    GROUP BY s.seniorStatus.dangerLevel
+""")
+    List<Object[]> countByDangerLevel();
+
+    // 위기 등급 기준
+    @Query("""
+        SELECT s.town, ss.dangerLevel, COUNT(s)
+        FROM Senior s
+        JOIN s.seniorStatus ss
+        WHERE s.isActive = true
+        GROUP BY s.town, ss.dangerLevel
+    """)
+    List<Object[]> countByTownAndDangerLevel();
+
+    // 마지막 활동 기준
+    @Query("""
+        SELECT s.town, ss.lastActTime, COUNT(s)
+        FROM Senior s
+        JOIN s.seniorStatus ss
+        WHERE s.isActive = true
+        GROUP BY s.town, ss.lastActTime
+    """)
+    List<Object[]> countByTownAndLastActTime();
+
+    // 이상 징후 기준
+    @Query("""
+        SELECT s.town, ss.state, COUNT(s)
+        FROM Senior s
+        JOIN s.seniorStatus ss
+        WHERE s.isActive = true
+        GROUP BY s.town, ss.state
+    """)
+    List<Object[]> countByTownAndState();
 }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CareRepository extends JpaRepository<Care, Long> {
@@ -31,4 +32,6 @@ public interface CareRepository extends JpaRepository<Care, Long> {
             "m.name LIKE %:#{#req.searchTerm}% OR " +
             "m.phoneNum LIKE %:#{#req.searchTerm}%)")
     List<Care> search(@Param("req") CareDto.SearchRequest dto);
+
+    List<Care> findAllByDateBetween(LocalDateTime start, LocalDateTime end);
 }
