@@ -2,6 +2,7 @@ package org.farm.fireflyserver.domain.senior.service;
 
 import lombok.RequiredArgsConstructor;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
+import org.farm.fireflyserver.domain.led.web.dto.response.LedStateDto;
 import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorInfoDto;
 import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorStateDto;
 import org.farm.fireflyserver.domain.senior.web.mapper.SeniorMapper;
@@ -38,12 +39,14 @@ public class SeniorServiceImpl implements SeniorService {
                 .map(senior -> {
                     String[] manager = getManagerInfo(senior);
                     SeniorStateDto seniorState = getSeniorState(senior);
+                    List<LedStateDto> ledState = getLedStates(senior);
 
-                    return SeniorInfoDto.of(senior, manager[0], manager[1], seniorState);
+                    return SeniorInfoDto.of(senior, manager[0], manager[1], seniorState, ledState);
                 })
                 .collect(Collectors.toList());
     }
 
+    // 대상자 담당자 정보
     private String[] getManagerInfo(Senior senior) {
         // 가장 최근 돌봄 이력
         Care latestCare = senior.getCareList().stream()
@@ -66,6 +69,12 @@ public class SeniorServiceImpl implements SeniorService {
                 : null;
     }
 
+    private List<LedStateDto> getLedStates(Senior senior) {
+        return senior.getLedStates().stream()
+                .map(LedStateDto::of)
+                .collect(Collectors.toList());
+    }
+
 
     // 대상자 검색
     @Override
@@ -76,7 +85,7 @@ public class SeniorServiceImpl implements SeniorService {
                 .map(s -> {
                     String[] manager = getManagerInfo(s);
                     SeniorStateDto seniorState = getSeniorState(s);
-                    return SeniorInfoDto.of(s, manager[0], manager[1], seniorState);
+                    return SeniorInfoDto.of(s, manager[0], manager[1], seniorState, getLedStates(s));
                 })
                 .collect(Collectors.toList());
     }
