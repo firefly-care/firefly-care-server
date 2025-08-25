@@ -2,7 +2,7 @@ package org.farm.fireflyserver.domain.care.web.dto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.farm.fireflyserver.domain.care.CareAnswer;
+import org.farm.fireflyserver.domain.care.persistence.entity.CareAnswer;
 
 @Getter
 @RequiredArgsConstructor

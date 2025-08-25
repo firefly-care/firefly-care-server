@@ -3,8 +3,8 @@ package org.farm.fireflyserver.domain.care.web.dto;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
-import org.farm.fireflyserver.domain.care.Result;
-import org.farm.fireflyserver.domain.care.Type;
+import org.farm.fireflyserver.domain.care.persistence.entity.Result;
+import org.farm.fireflyserver.domain.care.persistence.entity.Type;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 
 import java.time.LocalDate;

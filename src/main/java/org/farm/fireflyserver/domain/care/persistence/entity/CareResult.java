@@ -2,7 +2,6 @@ package org.farm.fireflyserver.domain.care.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.farm.fireflyserver.domain.care.CareAnswer;
 import org.hibernate.annotations.Comment;
 
 @Table(name = "care_result")
