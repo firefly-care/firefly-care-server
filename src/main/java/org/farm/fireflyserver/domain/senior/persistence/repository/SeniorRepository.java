@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SeniorRepository extends JpaRepository<Senior, Long> {
 
@@ -83,4 +84,11 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
         GROUP BY s.town, ss.state
     """)
     List<Object[]> countByTownAndState();
+
+    @Query("SELECT s FROM Senior s " +
+           "LEFT JOIN FETCH s.seniorStatus " +
+           "LEFT JOIN FETCH s.careList c " +
+           "LEFT JOIN FETCH c.managerAccount " +
+           "WHERE s.seniorId = :seniorId")
+    Optional<Senior> findSeniorDetailById(@Param("seniorId") Long seniorId);
 }
