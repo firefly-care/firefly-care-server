@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 
 public interface CareRepository extends JpaRepository<Care, Long> {
@@ -34,4 +35,9 @@ public interface CareRepository extends JpaRepository<Care, Long> {
     List<Care> search(@Param("req") CareDto.SearchRequest dto);
 
     List<Care> findAllByDateBetween(LocalDateTime start, LocalDateTime end);
+
+    List<Care> findAllBySeniorSeniorIdAndDateBetween(Long seniorId, LocalDateTime start, LocalDateTime end);
+
+    @Query("SELECT c.type, count(c) FROM Care c WHERE c.senior.seniorId = :seniorId AND YEAR(c.date) = :year AND MONTH(c.date) = :month GROUP BY c.type")
+    List<Object[]> countCareByTypePerMonth(@Param("seniorId") Long seniorId, @Param("year") int year, @Param("month") int month);
 }
