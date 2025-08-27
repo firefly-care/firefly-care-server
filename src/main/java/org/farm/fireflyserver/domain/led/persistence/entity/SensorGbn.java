@@ -17,12 +17,15 @@ public enum SensorGbn {
 
     //code->enum
     public static SensorGbn fromCode(String code) {
-        for (SensorGbn sensorGbn : SensorGbn.values()) {
-            if (sensorGbn.getCode().equals(code)) {
-                return sensorGbn;
+        if (code != null) {
+            for (SensorGbn sensorGbn : SensorGbn.values()) {
+                if (sensorGbn.getCode().equals(code)) {
+                    return sensorGbn;
+                }
             }
+            throw new IllegalArgumentException();
         }
-        throw new IllegalArgumentException();
+        return null;
     }
 
 }
