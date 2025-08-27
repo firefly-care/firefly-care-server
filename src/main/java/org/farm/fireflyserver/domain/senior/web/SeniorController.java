@@ -8,6 +8,7 @@ import org.farm.fireflyserver.common.response.BaseResponse;
 import org.farm.fireflyserver.common.response.SuccessCode;
 import org.farm.fireflyserver.domain.senior.service.SeniorService;
 import org.farm.fireflyserver.domain.senior.web.dto.request.RegisterSeniorDto;
+import org.farm.fireflyserver.domain.senior.web.dto.request.RequestSeniorDto;
 import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorDetailDto;
 import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorInfoDto;
 import org.springframework.web.bind.annotation.*;
@@ -61,4 +62,11 @@ public class SeniorController {
         return BaseResponse.of(SuccessCode.OK, seniorDetail);
     }
 
+    @Operation(summary = "대상자 서비스 취소", description = "대상자의 돌봄 서비스를 취소")
+    @PostMapping("/deactivate")
+    public BaseResponse<?> deactivateSenior(@Parameter(description = "대상자 식별자") @RequestBody RequestSeniorDto.Deactivate dto) {
+        seniorService.deactivateSenior(dto);
+
+        return BaseResponse.of(SuccessCode.OK);
+    }
 }
