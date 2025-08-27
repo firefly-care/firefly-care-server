@@ -18,13 +18,21 @@ public class LedHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ledHistoryId;
 
-    @Comment("LED ON/OFF 정보")
-    private boolean isOn;
+    @Comment("LED 식별 번호")
+    private String ledMtchnSn;
 
     @Enumerated(EnumType.STRING)
     @Comment("LED 센서 구분")
     private SensorGbn sensorGbn;
 
-    @Comment("LED 점등 시각")
-    private LocalDateTime onDate;
+    @Comment("LED ON/OFF 정보")
+    @Enumerated(EnumType.STRING)
+    private OnOff onOff;
+
+    @Comment("LED ON/OFF 시각")
+    private LocalDateTime eventTime;
+
+    public void updateEventTime(LocalDateTime eventTime) {
+        this.eventTime = eventTime;
+    }
 }
