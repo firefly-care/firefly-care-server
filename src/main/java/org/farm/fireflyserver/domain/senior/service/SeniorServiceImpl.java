@@ -7,6 +7,7 @@ import org.farm.fireflyserver.domain.account.persistence.entity.Account;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 import org.farm.fireflyserver.domain.led.web.dto.response.LedStateDto;
 import org.farm.fireflyserver.domain.senior.persistence.entity.SeniorStatus;
+import org.farm.fireflyserver.domain.senior.web.dto.request.RequestSeniorDto;
 import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorDetailDto;
 import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorInfoDto;
 import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorStateDto;
@@ -112,6 +113,14 @@ public class SeniorServiceImpl implements SeniorService {
         return SeniorDetailDto.fromEntities(senior, seniorStatus, managerAccount);
     }
 
+    @Transactional
+    @Override
+    public void deactivateSenior(RequestSeniorDto.Deactivate dto) {
+        Senior senior = seniorRepository.findById(dto.seniorId())
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SENIOR_NOT_FOUND));
+        senior.deactivate();
+    }
+
     private Account getManagerAccount(Senior senior) {
         Care latestCare = senior.getCareList().stream()
                 .max(Comparator.comparing(Care::getDate))
@@ -123,4 +132,6 @@ public class SeniorServiceImpl implements SeniorService {
 
         return latestCare.getManagerAccount();
     }
+
+
 }

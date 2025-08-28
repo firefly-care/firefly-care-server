@@ -95,4 +95,8 @@ public class Senior extends BaseCreatedTimeEntity {
 
     @OneToMany(mappedBy = "senior")
     private List<LedState> ledStates = new ArrayList<>();
+
+    public void deactivate() {
+        this.isActive = false;
+    }
 }
