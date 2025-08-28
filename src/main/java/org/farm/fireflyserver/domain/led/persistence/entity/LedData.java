@@ -15,7 +15,9 @@ public class LedData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ledDataId;
 
+    @Column(name = "TRG_SN")
     private String trgSn;
+    @Column(name = "SNSR_SN")
     private String snsrSn;
 
     @ManyToOne(fetch = FetchType.LAZY)
