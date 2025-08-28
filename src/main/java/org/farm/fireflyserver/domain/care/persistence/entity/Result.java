@@ -1,4 +1,4 @@
-package org.farm.fireflyserver.domain.care;
+package org.farm.fireflyserver.domain.care.persistence.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import org.farm.fireflyserver.common.exception.InvalidValueException;

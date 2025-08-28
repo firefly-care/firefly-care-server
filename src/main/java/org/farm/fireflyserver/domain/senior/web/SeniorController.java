@@ -8,6 +8,7 @@ import org.farm.fireflyserver.common.response.BaseResponse;
 import org.farm.fireflyserver.common.response.SuccessCode;
 import org.farm.fireflyserver.domain.senior.service.SeniorService;
 import org.farm.fireflyserver.domain.senior.web.dto.request.RegisterSeniorDto;
+import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorDetailDto;
 import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorInfoDto;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,6 +52,13 @@ public class SeniorController {
            ) {
         List<SeniorInfoDto> seniorInfo = seniorService.searchSeniors(isActive,keywordType,keyword);
         return BaseResponse.of(SuccessCode.OK, seniorInfo);
+    }
+
+    @Operation(summary = "대상자 상세 정보 조회", description = "특정 대상자의 상세 정보를 조회")
+    @GetMapping("/{seniorId}")
+    public BaseResponse<SeniorDetailDto> getSeniorDetail(@Parameter(description = "대상자 식별자") @PathVariable Long seniorId) {
+        SeniorDetailDto seniorDetail = seniorService.getSeniorDetail(seniorId);
+        return BaseResponse.of(SuccessCode.OK, seniorDetail);
     }
 
 }

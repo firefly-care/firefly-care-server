@@ -1,8 +1,13 @@
 package org.farm.fireflyserver.domain.senior.service;
 
 import lombok.RequiredArgsConstructor;
+import org.farm.fireflyserver.common.exception.EntityNotFoundException;
+import org.farm.fireflyserver.common.response.ErrorCode;
+import org.farm.fireflyserver.domain.account.persistence.entity.Account;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 import org.farm.fireflyserver.domain.led.web.dto.response.LedStateDto;
+import org.farm.fireflyserver.domain.senior.persistence.entity.SeniorStatus;
+import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorDetailDto;
 import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorInfoDto;
 import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorStateDto;
 import org.farm.fireflyserver.domain.senior.web.mapper.SeniorMapper;
@@ -12,9 +17,9 @@ import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorReposit
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.Comparator;
 
 @Service
 @RequiredArgsConstructor
@@ -88,6 +93,36 @@ public class SeniorServiceImpl implements SeniorService {
                     return SeniorInfoDto.of(s, manager[0], manager[1], seniorState, getLedStates(s));
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public SeniorDetailDto getSeniorDetail(Long seniorId) {
+        Senior senior = seniorRepository.findSeniorDetailById(seniorId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+
+        Account managerAccount = getManagerAccount(senior);
+        if (managerAccount == null) {
+            managerAccount = new Account(); // Create an empty account if no manager is found
+        }
+
+        SeniorStatus seniorStatus = senior.getSeniorStatus();
+        if (seniorStatus == null) {
+            seniorStatus = new SeniorStatus(); // Create an empty status if not found
+        }
+
+        return SeniorDetailDto.fromEntities(senior, seniorStatus, managerAccount);
+    }
+
+    private Account getManagerAccount(Senior senior) {
+        Care latestCare = senior.getCareList().stream()
+                .max(Comparator.comparing(Care::getDate))
+                .orElse(null);
+
+        if (latestCare == null) {
+            return null;
+        }
+
+        return latestCare.getManagerAccount();
     }
 
 
