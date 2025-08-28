@@ -7,6 +7,7 @@ import org.farm.fireflyserver.domain.care.service.CareService;
 import org.farm.fireflyserver.domain.care.web.dto.CareDto;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.YearMonth;
 import java.util.List;
 
 @RestController
@@ -34,5 +35,12 @@ public class CareController {
         List<CareDto.Response> response = service.searchCare(dto);
 
         return BaseResponse.of(SuccessCode.OK, response);
+    }
+
+    @GetMapping("/senior-monthly-status")
+    public BaseResponse<?> seniorMonthlyStatus(Long seniorId, YearMonth yearMonth) {
+        CareDto.MonthlyCare dto = service.getSeniorMonthlyCare(seniorId, yearMonth);
+
+        return BaseResponse.of(SuccessCode.OK, dto);
     }
 }

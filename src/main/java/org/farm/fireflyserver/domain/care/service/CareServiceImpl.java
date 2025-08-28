@@ -22,7 +22,9 @@ import org.farm.fireflyserver.domain.senior.persistence.entity.Senior;
 import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,5 +89,38 @@ public class CareServiceImpl implements CareService {
         return list.stream()
                 .map(CareDto.Response::from)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public CareDto.MonthlyCare getSeniorMonthlyCare(Long seniorId, YearMonth yearMonth) {
+        seniorRepository.findById(seniorId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SENIOR_NOT_FOUND));
+
+        Map<Type, Long> cntPerType = careRepository.countCareByTypePerMonth(seniorId, yearMonth.getYear(), yearMonth.getMonthValue())
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> (Type) row[0],
+                        row -> (Long) row[1]
+                ));
+
+        Long callCnt = cntPerType.getOrDefault(Type.CALL, 0L);
+        Long visitCnt = cntPerType.getOrDefault(Type.VISIT, 0L);
+        Long emergCnt = cntPerType.getOrDefault(Type.EMERGENCY, 0L);
+
+        List<Care> caresInMonth = careRepository.findAllBySeniorSeniorIdAndDateBetween(
+                seniorId,
+                yearMonth.atDay(1).atStartOfDay(),
+                yearMonth.atEndOfMonth().atTime(23, 59, 59)
+        );
+
+        List<CareDto.MonthlyCare.CareTuple> careTuples = caresInMonth.stream()
+                .map(care -> new CareDto.MonthlyCare.CareTuple(
+                        care.getDate(),
+                        care.getType(),
+                        care.getResult()
+                ))
+                .collect(Collectors.toList());
+
+        return new CareDto.MonthlyCare(callCnt, visitCnt, emergCnt, careTuples);
     }
 }

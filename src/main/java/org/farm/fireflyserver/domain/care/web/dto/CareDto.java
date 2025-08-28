@@ -9,6 +9,7 @@ import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class CareDto {
     @Getter
@@ -33,14 +34,14 @@ public class CareDto {
     }
 
     public record Response (
-        LocalDateTime date,
-        String managerId,
-        String managerName,
-        Type type,
-        String content,
-        String seniorId,
-        String seniorName,
-        Result result
+            LocalDateTime date,
+            String managerId,
+            String managerName,
+            Type type,
+            String content,
+            String seniorId,
+            String seniorName,
+            Result result
     ) {
         public static Response from(Care care) {
             return new Response(
@@ -63,5 +64,18 @@ public class CareDto {
             LocalDate endDate,
             String searchTerm
     ) {
+    }
+
+    public record MonthlyCare (
+            Long callCnt,
+            Long visitCnt,
+            Long emergCnt,
+            List<CareTuple> cares
+    ) {
+        public static record CareTuple (
+                LocalDateTime careDate,
+                Type careType,
+                Result result
+        ) {}
     }
 }

@@ -80,7 +80,6 @@ public class SeniorServiceImpl implements SeniorService {
                 .collect(Collectors.toList());
     }
 
-
     // 대상자 검색
     @Override
     public List<SeniorInfoDto> searchSeniors(Boolean isActive, String keywordType, String keyword) {
@@ -102,12 +101,12 @@ public class SeniorServiceImpl implements SeniorService {
 
         Account managerAccount = getManagerAccount(senior);
         if (managerAccount == null) {
-            managerAccount = new Account(); // Create an empty account if no manager is found
+            managerAccount = new Account();
         }
 
         SeniorStatus seniorStatus = senior.getSeniorStatus();
         if (seniorStatus == null) {
-            seniorStatus = new SeniorStatus(); // Create an empty status if not found
+            seniorStatus = new SeniorStatus();
         }
 
         return SeniorDetailDto.fromEntities(senior, seniorStatus, managerAccount);
@@ -124,6 +123,4 @@ public class SeniorServiceImpl implements SeniorService {
 
         return latestCare.getManagerAccount();
     }
-
-
 }
