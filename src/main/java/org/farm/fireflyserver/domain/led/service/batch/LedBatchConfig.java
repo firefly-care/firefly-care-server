@@ -49,8 +49,10 @@ public class LedBatchConfig {
                 .build();
     }
 
+
     // 10분마다 실행
-    @Scheduled(cron = "0 */10 * * * *")
+    //@Scheduled(cron = "0 */10 * * * *")
+    /*
     public void runScheduledLedHistoryJob() throws Exception {
         System.out.println("[Scheduled Batch] ledHistoryJob started at " + LocalDateTime.now());
         jobLauncher.run(
@@ -61,6 +63,7 @@ public class LedBatchConfig {
         );
         System.out.println("[Scheduled Batch] ledHistoryJob finished at " + LocalDateTime.now());
     }
+    */
 
     /* 바로 실행
     @Bean
