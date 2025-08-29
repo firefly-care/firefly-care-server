@@ -84,6 +84,7 @@ public class LedBatchConfig {
     @Scheduled(cron = "0 0/10 * * * *")
     public void runScheduledLedHistoryJob() throws Exception {
         System.out.println("[Scheduled Batch] ledHistoryJob started at " + LocalDateTime.now());
+        latestMap().clear();
         Job ledHistoryJob = context.getBean("ledHistoryJob", Job.class);
         jobLauncher.run(
                 ledHistoryJob,
