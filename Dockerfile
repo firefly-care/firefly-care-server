@@ -28,6 +28,14 @@ RUN ./gradlew bootJar
 # 자바 런타임(JRE)만 포함된 가벼운 이미지를 사용합니다.
 FROM eclipse-temurin:17-jre-alpine
 
+
+# 타임존 환경 변수 설정
+ENV TZ=Asia/Seoul
+RUN apk add --no-cache tzdata \
+    && cp /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone \
+    && apk del tzdata
+
 WORKDIR /app
 
 # Build Stage에서 생성된 JAR 파일만 복사해옵니다.
