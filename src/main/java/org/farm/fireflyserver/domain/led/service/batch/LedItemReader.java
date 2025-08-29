@@ -14,17 +14,20 @@ import java.time.LocalDateTime;
 public class LedItemReader {
 
     public static ItemReader<LedDataLogDto> reader(DataSource ledDataSource) {
+
         LocalDateTime now = LocalDateTime.now();
-        Timestamp tenMinutesAgo = Timestamp.valueOf(now.minusMinutes(10));
+
+        Timestamp start = Timestamp.valueOf(now.minusMinutes(10));
+        Timestamp end = Timestamp.valueOf(now);
 
         return new JdbcCursorItemReaderBuilder<LedDataLogDto>()
                 .name("ledSensorLogReader")
                 .dataSource(ledDataSource)
                 .sql("SELECT LED_MTCHN_SN, LED_SENSOR_GBN, REG_DT " +
                         "FROM t_led_sensor_log " +
-                        "WHERE REG_DT >= ? " +
+                        "WHERE REG_DT >= ? AND REG_DT < ? " +
                         "ORDER BY REG_DT DESC")
-                .queryArguments(tenMinutesAgo)
+                .queryArguments(start, end)
                 .rowMapper((rs, rowNum) -> new LedDataLogDto(
                         rs.getString("LED_MTCHN_SN"),
                         SensorGbn.fromCode(rs.getString("LED_SENSOR_GBN")),
