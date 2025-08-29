@@ -17,7 +17,7 @@ public class LedService {
 
     @Transactional
     public void saveLedData(SaveLedDataDto dto) {
-        LedData ledData= ledMapper.toEntity(dto);
+        LedData ledData = dto.toEntity(dto);
         ledDataRepository.save(ledData);
     }
 }
