@@ -49,7 +49,6 @@ public class LedBatchConfig {
         return new LedJobListener(ledHistoryRepository, latestMap);
     }
 
-
     // LED 데이터 히스토리 저장 배치 Job
     // ledDataSource : 실제 LED 센서 로그 받아오는 DB
     @Bean
@@ -84,8 +83,12 @@ public class LedBatchConfig {
     @Scheduled(cron = "0 0/10 * * * *")
     public void runScheduledLedHistoryJob() throws Exception {
         System.out.println("[Scheduled Batch] ledHistoryJob started at " + LocalDateTime.now());
-        latestMap().clear();
+
+        Map<String, LedDataLogDto> latestMap = context.getBean("latestMap", Map.class);
+        latestMap.clear();
+
         Job ledHistoryJob = context.getBean("ledHistoryJob", Job.class);
+
         jobLauncher.run(
                 ledHistoryJob,
                 new JobParametersBuilder()
@@ -95,8 +98,8 @@ public class LedBatchConfig {
         System.out.println("[Scheduled Batch] ledHistoryJob finished at " + LocalDateTime.now());
     }
 
+
    /*
-   //바로 실행용
     @Bean
     public CommandLineRunner runLedHistoryJob(Job ledHistoryJob) {
         return args -> {
@@ -111,4 +114,6 @@ public class LedBatchConfig {
         };
     }
     */
+
+
 }
