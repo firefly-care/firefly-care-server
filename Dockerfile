@@ -45,4 +45,4 @@ COPY --from=builder /build/build/libs/*.jar app.jar
 EXPOSE 8080
 
 # 컨테이너가 시작될 때 JAR 파일을 실행합니다.
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Duser.timezone=Asia/Seoul", "-jar", "app.jar"]
