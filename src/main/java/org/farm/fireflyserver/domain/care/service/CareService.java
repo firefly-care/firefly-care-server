@@ -10,4 +10,5 @@ public interface CareService {
     List<CareDto.Response> getAllCare();
     List<CareDto.Response> searchCare(CareDto.SearchRequest request);
     CareDto.MonthlyCare getSeniorMonthlyCare(Long seniorId, YearMonth yearMonth);
+    List<Long> getSeniorIdsByManagerId(Long managerId);
 }

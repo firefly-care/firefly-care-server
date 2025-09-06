@@ -123,4 +123,9 @@ public class CareServiceImpl implements CareService {
 
         return new CareDto.MonthlyCare(callCnt, visitCnt, emergCnt, careTuples);
     }
+
+    @Override
+    public List<Long> getSeniorIdsByManagerId(Long managerId) {
+        return careRepository.findDistinctSeniorIdsByManagerId(managerId);
+    }
 }
