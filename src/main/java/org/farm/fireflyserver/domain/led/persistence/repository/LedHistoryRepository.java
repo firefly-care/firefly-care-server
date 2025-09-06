@@ -27,11 +27,9 @@ public interface LedHistoryRepository extends JpaRepository<LedHistory, Long> {
     JOIN (
         SELECT t.led_mtchn_sn, t.sensor_gbn, MAX(t.led_history_id) AS max_id
         FROM led_history t
-        WHERE t.on_off = 'ON'
-          AND t.event_time >= :start
         GROUP BY t.led_mtchn_sn, t.sensor_gbn
     ) latest
       ON l.led_history_id = latest.max_id
-""", nativeQuery = true)
-    List<LedHistory> findLatestHistories(@Param("start") LocalDateTime start);
+    """, nativeQuery = true)
+    List<LedHistory> findLatestHistories();
 }

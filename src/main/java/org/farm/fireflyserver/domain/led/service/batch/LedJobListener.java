@@ -30,14 +30,13 @@ public class LedJobListener extends JobExecutionListenerSupport {
     // CASE 4: DB 있음(ON) → Processor 없음 → OFF 이벤트 추가
     @Override
     public void afterJob(JobExecution jobExecution) {
-        // 배치 기준 시각(now)과 윈도우 시작 계산
-        final LocalDateTime start = windowTimes.get("windowStart");
+
         final LocalDateTime now = windowTimes.get("now");
 
         entityManager.clear();  // 캐시 초기화
 
         // 모든 LED센서 최신 데이터 조회
-        List<LedHistory> allHistories = ledHistoryRepository.findLatestHistories(start);
+        List<LedHistory> allHistories = ledHistoryRepository.findLatestHistories();
 
         //로그
         allHistories.forEach(h ->
