@@ -9,4 +9,13 @@ public class ManagerDto {
             String careCnt,
             String recentCareDate
     ){}
+
+    public record DetailInfo(
+            Long managerId,
+            String name,
+            String phone,
+            String affiliation,
+            String email,
+            String address
+    ){}
 }

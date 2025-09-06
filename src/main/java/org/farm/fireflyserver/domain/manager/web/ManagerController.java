@@ -6,6 +6,7 @@ import org.farm.fireflyserver.common.response.SuccessCode;
 import org.farm.fireflyserver.domain.manager.service.ManagerService;
 import org.farm.fireflyserver.domain.manager.web.dto.ManagerDto;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,5 +25,10 @@ public class ManagerController {
         return BaseResponse.of(SuccessCode.OK, dtos);
     }
 
+    @GetMapping("/{id}")
+    public BaseResponse<?> getManagerById(@PathVariable Long id) {
+        ManagerDto.DetailInfo dto = managerService.getManagerById(id);
 
+        return BaseResponse.of(SuccessCode.OK, dto);
+    }
 }

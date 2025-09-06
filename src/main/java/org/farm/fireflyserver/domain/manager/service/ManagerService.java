@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface ManagerService {
     public List<ManagerDto.SimpleInfo> getAllManagers();
+    public ManagerDto.DetailInfo getManagerById(Long id);
 }
