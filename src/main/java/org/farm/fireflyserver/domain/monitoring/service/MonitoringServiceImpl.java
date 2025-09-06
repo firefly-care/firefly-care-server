@@ -48,9 +48,9 @@ public class MonitoringServiceImpl implements MonitoringService {
         // 담당자 현황
         List<ManagerStateDto> managerStateDto = getManagerState();
         // 캘린더 돌봄 현황
-        CalendarCareCountWithMonthDto calendarCareCount = CalendarCareCountWithMonthDto.of(calendarYearMonth, getCalendarCareCount(calendarYearMonth));
+        CalendarCareCountWithMonthDto calendarCareCount = getCalendarCareCount(calendarYearMonth);
         // 캘린더 돌봄 내역
-        CalendarCareStateWithDateDto calendarCareState = CalendarCareStateWithDateDto.of(calendarDate, getCalendarCareState(calendarDate));
+        CalendarCareStateWithDateDto calendarCareState = getCalendarCareState(calendarDate);
 
         return MainHomeDto.of(monthlyCareState, seniorStateCount,managerStateDto,calendarCareCount,calendarCareState);
 
@@ -78,7 +78,7 @@ public class MonitoringServiceImpl implements MonitoringService {
     }
 
     // Led 이상 탐지 현황
-    private SeniorLedStateCountDto getSeniorStateCount() {
+    public SeniorLedStateCountDto getSeniorStateCount() {
         List<Object[]> results = seniorRepository.countByDangerLevel();
 
         int normalCount = 0, attentionCount = 0, cautionCount = 0, dangerCount = 0;
@@ -103,7 +103,7 @@ public class MonitoringServiceImpl implements MonitoringService {
     }
 
     // 담당자 현황
-    private List<ManagerStateDto> getManagerState() {
+    public List<ManagerStateDto> getManagerState() {
         List<Account> managers = accountRepository.findAllByAuthority(Authority.MNG);
 
         return managers.stream().map(manager -> {
@@ -125,11 +125,11 @@ public class MonitoringServiceImpl implements MonitoringService {
 
 
     // 캘린더 돌봄 현황
-    private List<CalendarCareCountDto> getCalendarCareCount(String calendarYearMonth) {
+    public CalendarCareCountWithMonthDto getCalendarCareCount(String calendarYearMonth) {
         YearMonth ym = YearMonth.parse(calendarYearMonth, YM_FMT);
         List<Object[]> rows = careRepository.countByDateBetweenGroupByDate(startOfMonth(ym), endOfMonth(ym));
 
-        return rows.stream()
+        List<CalendarCareCountDto> items = rows.stream()
                 .map(row -> {
                     Object d0 = row[0];
                     LocalDate day = (d0 instanceof LocalDate ld) ? ld : ((java.sql.Date) d0).toLocalDate();
@@ -137,14 +137,22 @@ public class MonitoringServiceImpl implements MonitoringService {
                     return CalendarCareCountDto.of(day.getDayOfMonth(), count);
                 })
                 .toList();
+
+        return CalendarCareCountWithMonthDto.of(calendarYearMonth, items);
     }
 
 
+
     // 캘린더 돌봄 내역
-    private List<CalendarCareStateDto> getCalendarCareState(String calendarDate) {
+    public CalendarCareStateWithDateDto getCalendarCareState(String calendarDate) {
         LocalDate target = LocalDate.parse(calendarDate, YMD_FMT);
         List<Care> cares = careRepository.findAllByDateBetweenOrderByDateDesc(startOfDay(target), endOfDay(target));
-        return cares.stream().map(CalendarCareStateDto::from).toList();
+
+        List<CalendarCareStateDto> items = cares.stream()
+                .map(CalendarCareStateDto::from)
+                .toList();
+
+        return CalendarCareStateWithDateDto.of(calendarDate, items);
     }
 }
 
