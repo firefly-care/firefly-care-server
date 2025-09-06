@@ -126,6 +126,7 @@ public class LedBatchConfig {
     }
 
 
+    /*
     //바로 실행용
     @Bean
     public CommandLineRunner runLedHistoryJob(Job ledHistoryJob) {
@@ -143,7 +144,6 @@ public class LedBatchConfig {
             System.out.println("[Batch] ledHistoryJob finished at " + LocalDateTime.now());
         };
     }
-
-
+    */
 
 }
