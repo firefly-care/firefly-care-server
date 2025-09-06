@@ -5,7 +5,7 @@ import org.farm.fireflyserver.domain.manager.web.dto.ManagerDto;
 import java.util.List;
 
 public interface ManagerService {
-    public List<ManagerDto.SimpleInfo> getAllManagers();
-    public ManagerDto.DetailInfo getManagerById(Long id);
-    public List<ManagerDto.SeniorInfo> getSeniorsByManagerId(Long id);
+    List<ManagerDto.SimpleInfo> getAllManagers();
+    ManagerDto.DetailInfo getManagerById(Long id);
+    List<ManagerDto.SeniorInfo> getSeniorsByManagerId(Long id);
 }
