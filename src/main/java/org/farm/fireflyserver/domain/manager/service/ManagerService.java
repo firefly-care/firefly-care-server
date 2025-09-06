@@ -1,0 +1,9 @@
+package org.farm.fireflyserver.domain.manager.service;
+
+import org.farm.fireflyserver.domain.manager.web.dto.ManagerDto;
+
+import java.util.List;
+
+public interface ManagerService {
+    public List<ManagerDto.SimpleInfo> getAllManagers();
+}

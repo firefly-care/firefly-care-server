@@ -1,0 +1,26 @@
+package org.farm.fireflyserver.domain.manager.web;
+
+import lombok.RequiredArgsConstructor;
+import org.farm.fireflyserver.common.response.BaseResponse;
+import org.farm.fireflyserver.common.response.SuccessCode;
+import org.farm.fireflyserver.domain.manager.service.ManagerService;
+import org.farm.fireflyserver.domain.manager.web.dto.ManagerDto;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/manager")
+@RequiredArgsConstructor
+public class ManagerController {
+    private final ManagerService managerService;
+
+    @GetMapping()
+    public BaseResponse<?> getAllManagers() {
+        List<ManagerDto.SimpleInfo> dtos = managerService.getAllManagers();
+
+        return BaseResponse.of(SuccessCode.OK, dtos);
+    }
+}
