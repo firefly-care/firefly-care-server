@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Configuration
 @EnableBatchProcessing
@@ -135,7 +136,7 @@ public class LedBatchConfig {
             jobLauncher.run(
                     ledHistoryJob,
                     new JobParametersBuilder()
-                            .addLong("run.id", now)
+                            .addString("run.id", UUID.randomUUID().toString())
                             .addLong("window.now", now)
                             .toJobParameters()
             );
