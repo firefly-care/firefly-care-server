@@ -5,20 +5,28 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
 public record MainHomeDto(
-        @Schema(description = "서비스 대상자 현황")
-        SeniorCountDto seniorCount,
-
-        @Schema(description = "LED 이상 탐지 현황")
-        SeniorLedStateCountDto seniorStateCount,
 
         @Schema(description = "월간 돌봄 현황")
         MonthlyCareStateDto monthlyCareState,
 
-        @Schema(description = "지역별 대상자 상태 현황")
-        List<TownStateDto> townState
-) {
-    public static MainHomeDto of(SeniorCountDto seniorCount, SeniorLedStateCountDto seniorStateCount, MonthlyCareStateDto monthlyCareState, List<TownStateDto> townState) {
+        @Schema(description = "LED 이상 탐지 현황")
+        SeniorLedStateCountDto seniorStateCount,
 
-        return new MainHomeDto(seniorCount,seniorStateCount,monthlyCareState,townState);
+        @Schema(description = "담당자 현황")
+        List<ManagerStateDto> managerState,
+
+        @Schema(description = "달력 돌봄 현황")
+        CalendarCareCountWithMonthDto calendarCareCount,
+
+        @Schema(description = "달력 돌봄 내역")
+        CalendarCareStateWithDateDto calendarCareState
+
+) {
+    public static MainHomeDto of(MonthlyCareStateDto monthlyCareState,
+                                 SeniorLedStateCountDto seniorStateCount,
+                                 List<ManagerStateDto> managerState,
+                                 CalendarCareCountWithMonthDto calendarCareCount,
+                                 CalendarCareStateWithDateDto calendarCareState) {
+        return new MainHomeDto(monthlyCareState, seniorStateCount, managerState, calendarCareCount, calendarCareState);
     }
 }

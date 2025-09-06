@@ -38,7 +38,7 @@ public class LedBatchConfig {
     private final LedHistoryRepository ledHistoryRepository;
     private final JobLauncher jobLauncher;
 
-    // 공톹 시간 Map
+    // 공통 시간 Map
     @Bean
     @JobScope
     public Map<String, LocalDateTime> windowTimes(
