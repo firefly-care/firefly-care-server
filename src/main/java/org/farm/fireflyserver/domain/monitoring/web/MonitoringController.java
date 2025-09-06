@@ -21,8 +21,7 @@ public class MonitoringController {
 
     @GetMapping("/main")
     @Operation(summary = "메인 홈 모니터링 정보 조회",
-            description = "메인 홈 모니터링 정보 조회(레이아웃별로 구성된 정보 반환) + \n"+
-                    "지역별 대상자 상태 현황은 필터링 아직 적용 전이라 지역별 대상자 상태 현황을 한 번에 반환합니다!(이후 적용 예정)")
+            description = "메인 홈 모니터링 정보 조회(레이아웃별로 구성된 정보 반환) + \n")
     public BaseResponse<?> getMainHome(){
         MainHomeDto mainHome = monitoringService.getMainHome();
         return BaseResponse.of(SuccessCode.OK, mainHome);

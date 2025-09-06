@@ -1,6 +1,8 @@
 package org.farm.fireflyserver.domain.monitoring.service;
 
 import lombok.RequiredArgsConstructor;
+import org.farm.fireflyserver.domain.account.persistence.AccountRepository;
+import org.farm.fireflyserver.domain.account.persistence.entity.Authority;
 import org.farm.fireflyserver.domain.care.persistence.CareRepository;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 import org.farm.fireflyserver.domain.monitoring.web.dto.*;
@@ -22,15 +24,16 @@ public class MonitoringServiceImpl implements MonitoringService {
 
     private final SeniorRepository seniorRepository;
     private final CareRepository careRepository;
+    private final AccountRepository accountRepository;
 
     //메인홈 조회
     @Override
     public MainHomeDto getMainHome() {
-        SeniorCountDto seniorCount = getSeniorCount();
-        SeniorLedStateCountDto seniorStateCount = getSeniorStateCount();
+
         MonthlyCareStateDto monthlyCareState = getMonthlyCareState();
-        List<TownStateDto> townState = getTownStateCount();
-        return MainHomeDto.of(seniorCount, seniorStateCount, monthlyCareState, townState);
+        SeniorLedStateCountDto seniorStateCount = getSeniorStateCount();
+
+        return MainHomeDto.of(monthlyCareState, seniorStateCount);
 
     }
 
@@ -104,7 +107,9 @@ public class MonitoringServiceImpl implements MonitoringService {
 
         List<Care> cares = getCaresByMonth(year, month);
 
-        int totalCount = seniorRepository.countByIsActiveTrue();
+        int totalSeniorCount = seniorRepository.countByIsActiveTrue();
+        int totalManagerCount = accountRepository.countByAuthority(Authority.MNG);
+
         int callCount = 0, visitCount = 0, emergencyCount = 0;
 
         for (Care care : cares) {
@@ -115,9 +120,9 @@ public class MonitoringServiceImpl implements MonitoringService {
             }
         }
 
-        int careCount = callCount + visitCount + emergencyCount;
+        int totalCareCount = callCount + visitCount + emergencyCount;
 
-        return MonthlyCareStateDto.of(monthStr, totalCount, careCount, callCount, visitCount, emergencyCount);
+        return MonthlyCareStateDto.of(monthStr, totalSeniorCount, totalManagerCount, totalCareCount, callCount, visitCount, emergencyCount);
     }
 
     // 월별 돌봄 기록 조회
