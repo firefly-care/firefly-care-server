@@ -17,6 +17,7 @@ public class ManagerRepositoryImpl implements ManagerRepositoryCustom {
     public List<ManagerDto.SimpleInfo> findManagerSimpleInfoList() {
         return queryFactory
                 .select(Projections.constructor(ManagerDto.SimpleInfo.class,
+                        manager.managerId,
                         manager.name,
                         manager.seniorCnt,
                         manager.careCnt,

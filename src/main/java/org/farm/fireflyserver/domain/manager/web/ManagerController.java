@@ -23,4 +23,6 @@ public class ManagerController {
 
         return BaseResponse.of(SuccessCode.OK, dtos);
     }
+
+
 }
