@@ -23,9 +23,11 @@ public class LedBatchScheduler {
     @Scheduled(cron = "0 */5 * * * *", zone = "${app.timezone:Asia/Seoul}")
     public void runScheduledLedHistoryJob() throws Exception {
         // 중복 실행 방지
-        if (!jobExplorer.findRunningJobExecutions("ledHistoryJob").isEmpty()) {
-            return;
-        }
+//        if (!jobExplorer.findRunningJobExecutions("ledHistoryJob").isEmpty()) {
+//            return;
+//        }
+
+
         long now = System.currentTimeMillis();
         jobLauncher.run(
                 ledHistoryJob,
