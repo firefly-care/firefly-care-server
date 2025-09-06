@@ -5,9 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name = "manager")
 @Entity
@@ -52,4 +55,7 @@ public class Manager {
 
     @Comment("최근 돌봄 일자")
     private LocalDate recentCareDate;
+
+    @OneToMany(mappedBy = "manager")
+    private List<Care> careList = new ArrayList<>();
 }
