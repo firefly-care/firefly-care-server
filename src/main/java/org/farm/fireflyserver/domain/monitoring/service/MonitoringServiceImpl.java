@@ -6,10 +6,7 @@ import org.farm.fireflyserver.domain.account.persistence.entity.Account;
 import org.farm.fireflyserver.domain.account.persistence.entity.Authority;
 import org.farm.fireflyserver.domain.care.persistence.CareRepository;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
-import org.farm.fireflyserver.domain.monitoring.web.dto.MainHomeDto;
-import org.farm.fireflyserver.domain.monitoring.web.dto.ManagerStateDto;
-import org.farm.fireflyserver.domain.monitoring.web.dto.MonthlyCareStateDto;
-import org.farm.fireflyserver.domain.monitoring.web.dto.SeniorLedStateCountDto;
+import org.farm.fireflyserver.domain.monitoring.web.dto.*;
 import org.farm.fireflyserver.domain.senior.persistence.entity.DangerLevel;
 import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorRepository;
 import org.springframework.stereotype.Service;
@@ -19,7 +16,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -33,16 +29,21 @@ public class MonitoringServiceImpl implements MonitoringService {
 
     //메인홈 조회
     @Override
-    public MainHomeDto getMainHome(String yearMonth) {
+    public MainHomeDto getMainHome(String yearMonth, String calendarYearMonth, String calendarDate) {
         // 월별 돌봄 현황
         MonthlyCareStateDto monthlyCareState = getMonthlyCareState(yearMonth);
         // LED 이상 탐지 현황
         SeniorLedStateCountDto seniorStateCount = getSeniorStateCount();
         // 담당자 현황
         List<ManagerStateDto> managerStateDto = getManagerState();
-        return MainHomeDto.of(monthlyCareState, seniorStateCount,managerStateDto);
+
+        // 캘린더 돌봄 내역
+        CalendarCareStateWithDate calendarCareState = CalendarCareStateWithDate.of(calendarDate, getCalendarCareStates(calendarDate));
+
+        return MainHomeDto.of(monthlyCareState, seniorStateCount,managerStateDto,calendarCareState);
 
     }
+
 
     // 월별 돌봄 현황
     public MonthlyCareStateDto getMonthlyCareState(String yearMonth) {
@@ -141,8 +142,24 @@ public class MonitoringServiceImpl implements MonitoringService {
         else return days + "일 전";
     }
 
+    // 캘린더 돌봄 내역
+    private List<CalendarCareStateDto> getCalendarCareStates(String calendarDate) {
+        String part[] = calendarDate.split("\\.");
+        int year = Integer.parseInt(part[0]);
+        int month = Integer.parseInt(part[1]);
+        int day = Integer.parseInt(part[2]);
 
+        LocalDate targetDate = LocalDate.of(year, month, day);
 
+        List<Care> cares = careRepository.findAllByDateBetweenOrderByDateDesc(
+                targetDate.atStartOfDay(),
+                targetDate.atTime(23, 59, 59)
+        );
+
+        return cares.stream()
+                .map(care -> CalendarCareStateDto.from(care))
+                .toList();
+    }
 
    /* ==================================================================
      * 안쓰는 함수 V1

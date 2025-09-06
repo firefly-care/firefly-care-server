@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/monitoring")
@@ -23,8 +26,19 @@ public class MonitoringController {
     @GetMapping("/main")
     @Operation(summary = "메인 홈 모니터링 정보 조회",
             description = "메인 홈 모니터링 정보 조회(레이아웃별로 구성된 정보 반환) + \n")
-    public BaseResponse<?> getMainHome(@RequestParam String yearMonth){
-        MainHomeDto mainHome = monitoringService.getMainHome(yearMonth);
+    public BaseResponse<?> getMainHome( @RequestParam(required = false) String yearMonth,
+                                        @RequestParam(required = false) String calendarYearMonth,
+                                        @RequestParam(required = false) String calendarDate) {
+
+        // 오늘 날짜 기준 기본 값
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter ymdFmt  = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+
+        yearMonth = (yearMonth == null || yearMonth.isBlank())? today.format(ymdFmt) : yearMonth;
+        calendarYearMonth = (calendarYearMonth == null || calendarYearMonth.isBlank()) ? today.format(ymdFmt) : calendarYearMonth;
+        calendarDate = (calendarDate == null || calendarDate.isBlank()) ? today.format(ymdFmt) : calendarDate;
+
+        MainHomeDto mainHome = monitoringService.getMainHome(yearMonth, calendarYearMonth, calendarDate);
         return BaseResponse.of(SuccessCode.OK, mainHome);
     }
 }

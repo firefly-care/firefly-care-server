@@ -13,12 +13,15 @@ public record MainHomeDto(
         SeniorLedStateCountDto seniorStateCount,
 
         @Schema(description = "담당자 현황")
-        List<ManagerStateDto> managerState
+        List<ManagerStateDto> managerState,
+
+        CalendarCareStateWithDate calendarCareState
 
 ) {
     public static MainHomeDto of(MonthlyCareStateDto monthlyCareState,
                                  SeniorLedStateCountDto seniorStateCount,
-                                 List<ManagerStateDto> managerState) {
-        return new MainHomeDto(monthlyCareState, seniorStateCount, managerState);
+                                 List<ManagerStateDto> managerState,
+                                 CalendarCareStateWithDate calendarCareState) {
+        return new MainHomeDto(monthlyCareState, seniorStateCount, managerState, calendarCareState);
     }
 }

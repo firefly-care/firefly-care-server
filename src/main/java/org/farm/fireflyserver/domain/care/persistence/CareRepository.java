@@ -35,6 +35,7 @@ public interface CareRepository extends JpaRepository<Care, Long> {
     List<Care> search(@Param("req") CareDto.SearchRequest dto);
 
     List<Care> findAllByDateBetween(LocalDateTime start, LocalDateTime end);
+    List<Care> findAllByDateBetweenOrderByDateDesc(LocalDateTime start, LocalDateTime end);
 
     List<Care> findAllBySeniorSeniorIdAndDateBetween(Long seniorId, LocalDateTime start, LocalDateTime end);
 
