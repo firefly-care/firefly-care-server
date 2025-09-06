@@ -1,9 +1,5 @@
 package org.farm.fireflyserver.domain.monitoring.web.dto;
 
-import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorStateDto;
-
-import java.util.List;
-
 public record SeniorLedStateCountDto(
         int ledUseCount,
         //정상

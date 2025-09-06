@@ -2,20 +2,25 @@ package org.farm.fireflyserver.domain.monitoring.service;
 
 import lombok.RequiredArgsConstructor;
 import org.farm.fireflyserver.domain.account.persistence.AccountRepository;
+import org.farm.fireflyserver.domain.account.persistence.entity.Account;
 import org.farm.fireflyserver.domain.account.persistence.entity.Authority;
 import org.farm.fireflyserver.domain.care.persistence.CareRepository;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
-import org.farm.fireflyserver.domain.monitoring.web.dto.*;
+import org.farm.fireflyserver.domain.monitoring.web.dto.MainHomeDto;
+import org.farm.fireflyserver.domain.monitoring.web.dto.ManagerStateDto;
+import org.farm.fireflyserver.domain.monitoring.web.dto.MonthlyCareStateDto;
+import org.farm.fireflyserver.domain.monitoring.web.dto.SeniorLedStateCountDto;
 import org.farm.fireflyserver.domain.senior.persistence.entity.DangerLevel;
 import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.util.HashMap;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -28,21 +33,24 @@ public class MonitoringServiceImpl implements MonitoringService {
 
     //메인홈 조회
     @Override
-    public MainHomeDto getMainHome() {
-
-        MonthlyCareStateDto monthlyCareState = getMonthlyCareState();
-
+    public MainHomeDto getMainHome(String yearMonth) {
+        // 월별 돌봄 현황
+        MonthlyCareStateDto monthlyCareState = getMonthlyCareState(yearMonth);
+        // LED 이상 탐지 현황
         SeniorLedStateCountDto seniorStateCount = getSeniorStateCount();
-
-        return MainHomeDto.of(monthlyCareState, seniorStateCount);
+        // 담당자 현황
+        List<ManagerStateDto> managerStateDto = getManagerState();
+        return MainHomeDto.of(monthlyCareState, seniorStateCount,managerStateDto);
 
     }
 
     // 월별 돌봄 현황
-    public MonthlyCareStateDto getMonthlyCareState() {
-        int year = LocalDate.now().getYear();
-        int month = LocalDate.now().getMonthValue();
-        String monthStr = String.format("%04d.%02d", year, month);
+    public MonthlyCareStateDto getMonthlyCareState(String yearMonth) {
+        System.out.println("yearMonth = " + yearMonth);
+        String part[] = yearMonth.split("\\.");
+        int year = Integer.parseInt(part[0]);
+        int month = Integer.parseInt(part[1]);
+        String monthStr = yearMonth;
 
         List<Care> cares = getCaresByMonth(year, month);
 
@@ -66,6 +74,7 @@ public class MonitoringServiceImpl implements MonitoringService {
 
     // 월별 돌봄 기록 조회
     private List<Care> getCaresByMonth(int year, int month) {
+
         YearMonth targetMonth = YearMonth.of(year, month);
         LocalDate startDate = targetMonth.atDay(1);
         LocalDate endDate = targetMonth.atEndOfMonth();
@@ -100,6 +109,39 @@ public class MonitoringServiceImpl implements MonitoringService {
 
         return SeniorLedStateCountDto.of(ledUseCount, normalCount, attentionCount, cautionCount, dangerCount);
     }
+
+    // 담당자 현황
+    private List<ManagerStateDto> getManagerState() {
+        List<Account> managers = accountRepository.findAllByAuthority(Authority.MNG);
+
+        return managers.stream().map(manager -> {
+            long careCount = careRepository.countByManagerAccount(manager);
+            long seniorCount = careRepository.countDistinctSeniorByManagerAccount(manager);
+            Care recentCare = careRepository.findTopByManagerAccountOrderByDateDesc(manager);
+            String recentCareDate = formatRecentCareDate(recentCare != null ? recentCare.getDate() : null);
+
+            return new ManagerStateDto(
+                    manager.getName(),
+                    (int)seniorCount,
+                    (int)careCount,
+                    recentCareDate
+            );
+        }).toList();
+    }
+
+    private String formatRecentCareDate(LocalDateTime date) {
+        LocalDateTime now = LocalDateTime.now();
+        Duration duration = Duration.between(date, now);
+
+        long hours = duration.toHours();
+        long days = duration.toDays();
+
+        if (date == null) return "기록 없음";
+        if (hours < 24) return hours + "시간 전";
+        else return days + "일 전";
+    }
+
+
 
 
    /* ==================================================================

@@ -1,5 +1,6 @@
 package org.farm.fireflyserver.domain.care.persistence;
 
+import org.farm.fireflyserver.domain.account.persistence.entity.Account;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 import org.farm.fireflyserver.domain.care.web.dto.CareDto;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,4 +40,14 @@ public interface CareRepository extends JpaRepository<Care, Long> {
 
     @Query("SELECT c.type, count(c) FROM Care c WHERE c.senior.seniorId = :seniorId AND YEAR(c.date) = :year AND MONTH(c.date) = :month GROUP BY c.type")
     List<Object[]> countCareByTypePerMonth(@Param("seniorId") Long seniorId, @Param("year") int year, @Param("month") int month);
+
+    // 특정 담당자가 수행한 돌봄 건수
+    long countByManagerAccount(Account manager);
+
+    // 특정 담당자가 돌본 대상자 수
+    @Query("select count(distinct c.senior) from Care c where c.managerAccount = :manager")
+    long countDistinctSeniorByManagerAccount(Account manager);
+
+    // 특정 담당자가 최근에 수행한 돌봄 기록
+    Care findTopByManagerAccountOrderByDateDesc(Account manager);
 }

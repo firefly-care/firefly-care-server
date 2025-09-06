@@ -9,6 +9,7 @@ import org.farm.fireflyserver.domain.monitoring.service.MonitoringService;
 import org.farm.fireflyserver.domain.monitoring.web.dto.MainHomeDto;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -22,8 +23,8 @@ public class MonitoringController {
     @GetMapping("/main")
     @Operation(summary = "메인 홈 모니터링 정보 조회",
             description = "메인 홈 모니터링 정보 조회(레이아웃별로 구성된 정보 반환) + \n")
-    public BaseResponse<?> getMainHome(){
-        MainHomeDto mainHome = monitoringService.getMainHome();
+    public BaseResponse<?> getMainHome(@RequestParam String yearMonth){
+        MainHomeDto mainHome = monitoringService.getMainHome(yearMonth);
         return BaseResponse.of(SuccessCode.OK, mainHome);
     }
 }
