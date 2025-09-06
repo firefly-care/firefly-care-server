@@ -31,4 +31,11 @@ public class ManagerController {
 
         return BaseResponse.of(SuccessCode.OK, dto);
     }
+
+    @GetMapping("/{id}/seniors")
+    public BaseResponse<?> getSeniorsByManagerId(@PathVariable Long id) {
+        List<ManagerDto.SeniorInfo> dtos = managerService.getSeniorsByManagerId(id);
+
+        return BaseResponse.of(SuccessCode.OK, dtos);
+    }
 }
