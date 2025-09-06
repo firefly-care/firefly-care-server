@@ -31,72 +31,11 @@ public class MonitoringServiceImpl implements MonitoringService {
     public MainHomeDto getMainHome() {
 
         MonthlyCareStateDto monthlyCareState = getMonthlyCareState();
+
         SeniorLedStateCountDto seniorStateCount = getSeniorStateCount();
 
         return MainHomeDto.of(monthlyCareState, seniorStateCount);
 
-    }
-
-    // 대상자 수 조회
-    private SeniorCountDto getSeniorCount() {
-        int totalCount = seniorRepository.countByIsActiveTrue();
-        int amiUseCount = seniorRepository.countByIsActiveTrueAndIsAmiUseTrue();
-        int ledUseCount = seniorRepository.countByIsActiveTrueAndIsLedUseTrue();
-
-        List<ByTownCountDto> byTownCount = getSeniorCountByTown();
-
-        return SeniorCountDto.of(totalCount, ledUseCount, amiUseCount, byTownCount);
-    }
-
-    // 읍면동별로 대상자 수
-    private List<ByTownCountDto> getSeniorCountByTown() {
-        List<Object[]> results = seniorRepository.countByTown();
-
-        return results.stream()
-                .map(row -> ByTownCountDto.of(
-                        (String) row[0],
-                        ((Long) row[1]).intValue()
-                ))
-                .toList();
-    }
-
-    // Led 이상 탐지 현황
-    private SeniorLedStateCountDto getSeniorStateCount() {
-        List<Object[]> results = seniorRepository.countByDangerLevel();
-
-        int normalCount = 0, attentionCount = 0, cautionCount = 0, dangerCount = 0;
-
-        for (Object[] row : results) {
-            DangerLevel level = (DangerLevel) row[0];
-            int count = ((Long) row[1]).intValue();
-
-            if (level == null) level = DangerLevel.NORMAL;
-
-            switch (level) {
-                case NORMAL -> normalCount = count;
-                case ATTENTION -> attentionCount = count;
-                case CAUTION -> cautionCount = count;
-                case DANGER -> dangerCount = count;
-            }
-        }
-
-        int ledUseCount = seniorRepository.countByIsActiveTrueAndIsLedUseTrue();
-        List<SeniorLedStateDto> seniorLedStates = convertToLedStateDto();
-
-        return SeniorLedStateCountDto.of(ledUseCount, normalCount, attentionCount, cautionCount, dangerCount, seniorLedStates
-        );
-    }
-
-    private List<SeniorLedStateDto> convertToLedStateDto() {
-        return seniorRepository.findByIsActiveTrueAndIsLedUseTrue().stream()
-                .map(senior -> SeniorLedStateDto.from(
-                        senior,
-                        senior.getCareList().stream()
-                                .map(care -> care.getManagerAccount().getName())
-                                .findFirst()
-                                .orElse(null)
-                ))
-                .toList();
     }
 
     // 월별 돌봄 현황
@@ -135,6 +74,59 @@ public class MonitoringServiceImpl implements MonitoringService {
                 startDate.atStartOfDay(),
                 endDate.atTime(23, 59, 59)
         );
+    }
+
+    // Led 이상 탐지 현황
+    private SeniorLedStateCountDto getSeniorStateCount() {
+        List<Object[]> results = seniorRepository.countByDangerLevel();
+
+        int normalCount = 0, attentionCount = 0, cautionCount = 0, dangerCount = 0;
+
+        for (Object[] row : results) {
+            DangerLevel level = (DangerLevel) row[0];
+            int count = ((Long) row[1]).intValue();
+
+            if (level == null) level = DangerLevel.NORMAL;
+
+            switch (level) {
+                case NORMAL -> normalCount = count;
+                case ATTENTION -> attentionCount = count;
+                case CAUTION -> cautionCount = count;
+                case DANGER -> dangerCount = count;
+            }
+        }
+
+        int ledUseCount = seniorRepository.countByIsActiveTrueAndIsLedUseTrue();
+
+        return SeniorLedStateCountDto.of(ledUseCount, normalCount, attentionCount, cautionCount, dangerCount);
+    }
+
+
+   /* ==================================================================
+     * 안쓰는 함수 V1
+     * ==================================================================
+
+    // 대상자 수 조회
+    private SeniorCountDto getSeniorCount() {
+        int totalCount = seniorRepository.countByIsActiveTrue();
+        int amiUseCount = seniorRepository.countByIsActiveTrueAndIsAmiUseTrue();
+        int ledUseCount = seniorRepository.countByIsActiveTrueAndIsLedUseTrue();
+
+        List<ByTownCountDto> byTownCount = getSeniorCountByTown();
+
+        return SeniorCountDto.of(totalCount, ledUseCount, amiUseCount, byTownCount);
+    }
+
+    // 읍면동별로 대상자 수
+    private List<ByTownCountDto> getSeniorCountByTown() {
+        List<Object[]> results = seniorRepository.countByTown();
+
+        return results.stream()
+                .map(row -> ByTownCountDto.of(
+                        (String) row[0],
+                        ((Long) row[1]).intValue()
+                ))
+                .toList();
     }
 
     //TODO : 필터링으로 처리
@@ -229,5 +221,16 @@ public class MonitoringServiceImpl implements MonitoringService {
         }
     }
 
-
+    private List<SeniorLedStateDto> convertToLedStateDto() {
+        return seniorRepository.findByIsActiveTrueAndIsLedUseTrue().stream()
+                .map(senior -> SeniorLedStateDto.from(
+                        senior,
+                        senior.getCareList().stream()
+                                .map(care -> care.getManagerAccount().getName())
+                                .findFirst()
+                                .orElse(null)
+                ))
+                .toList();
+    }
+*/
 }
