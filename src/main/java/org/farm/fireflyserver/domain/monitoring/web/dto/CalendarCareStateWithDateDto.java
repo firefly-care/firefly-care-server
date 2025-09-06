@@ -2,12 +2,12 @@ package org.farm.fireflyserver.domain.monitoring.web.dto;
 
 import java.util.List;
 
-public record CalendarCareStateWithDate(
-        String careStateDate,
+public record CalendarCareStateWithDateDto(
+        String date,
         List<CalendarCareStateDto> careState
 ) {
-    public static CalendarCareStateWithDate of(String careStateDate,
+    public static CalendarCareStateWithDateDto of(String date,
                                                List<CalendarCareStateDto> careState) {
-        return new CalendarCareStateWithDate(careStateDate, careState);
+        return new CalendarCareStateWithDateDto(date, careState);
     }
 }

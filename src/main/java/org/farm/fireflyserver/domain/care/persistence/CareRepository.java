@@ -41,6 +41,8 @@ public interface CareRepository extends JpaRepository<Care, Long> {
 
     @Query("SELECT c.type, count(c) FROM Care c WHERE c.senior.seniorId = :seniorId AND YEAR(c.date) = :year AND MONTH(c.date) = :month GROUP BY c.type")
     List<Object[]> countCareByTypePerMonth(@Param("seniorId") Long seniorId, @Param("year") int year, @Param("month") int month);
+    @Query("SELECT DATE(c.date), COUNT(c) FROM Care c WHERE c.date BETWEEN :start AND :end GROUP BY DATE(c.date) ORDER BY DATE(c.date)")
+    List<Object[]> countByDateBetweenGroupByDate(LocalDateTime start, LocalDateTime end);
 
     // 특정 담당자가 수행한 돌봄 건수
     long countByManagerAccount(Account manager);

@@ -30,12 +30,13 @@ public class MonitoringController {
                                         @RequestParam(required = false) String calendarYearMonth,
                                         @RequestParam(required = false) String calendarDate) {
 
-        // 오늘 날짜 기준 기본 값
+        // 오늘 날짜 기준 기본 값 설정
         LocalDate today = LocalDate.now();
+        DateTimeFormatter ymFmt   = DateTimeFormatter.ofPattern("yyyy.MM");
         DateTimeFormatter ymdFmt  = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
-        yearMonth = (yearMonth == null || yearMonth.isBlank())? today.format(ymdFmt) : yearMonth;
-        calendarYearMonth = (calendarYearMonth == null || calendarYearMonth.isBlank()) ? today.format(ymdFmt) : calendarYearMonth;
+        yearMonth = (yearMonth == null || yearMonth.isBlank())? today.format(ymFmt) : yearMonth;
+        calendarYearMonth = (calendarYearMonth == null || calendarYearMonth.isBlank()) ? today.format(ymFmt) : calendarYearMonth;
         calendarDate = (calendarDate == null || calendarDate.isBlank()) ? today.format(ymdFmt) : calendarDate;
 
         MainHomeDto mainHome = monitoringService.getMainHome(yearMonth, calendarYearMonth, calendarDate);
