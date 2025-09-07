@@ -1,6 +1,9 @@
 package org.farm.fireflyserver.domain.manager.web.dto;
 
+import org.farm.fireflyserver.domain.care.persistence.entity.Result;
 import org.farm.fireflyserver.domain.senior.persistence.entity.Gender;
+
+import java.time.LocalDateTime;
 
 public class ManagerDto {
 
@@ -27,5 +30,13 @@ public class ManagerDto {
             Gender gender,
             Long age,
             String address
+    ){}
+
+    public record CareSeniorInfo(
+            String seniorName,
+            Gender seniorGender,
+            Long seniorAge,
+            LocalDateTime careDate,
+            Result careResult
     ){}
 }

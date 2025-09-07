@@ -3,6 +3,7 @@ package org.farm.fireflyserver.domain.manager.service;
 import lombok.RequiredArgsConstructor;
 import org.farm.fireflyserver.common.exception.EntityNotFoundException;
 import org.farm.fireflyserver.common.response.ErrorCode;
+import org.farm.fireflyserver.domain.care.persistence.entity.Type;
 import org.farm.fireflyserver.domain.care.service.CareService;
 import org.farm.fireflyserver.domain.manager.persistence.ManagerRepository;
 import org.farm.fireflyserver.domain.manager.web.dto.ManagerDto;
@@ -40,5 +41,15 @@ public class ManagerServiceImpl implements ManagerService {
         List<Long> seniorIds = careService.getSeniorIdsByManagerId(id);
 
         return seniorService.getSeniorInfoByIds(seniorIds);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ManagerDto.CareSeniorInfo> getCareSeniorInfoByManagerAndCareType(Long managerId, Type careType) {
+        if (!managerRepository.existsById(managerId)) {
+            throw new EntityNotFoundException(ErrorCode.ENTITY_NOT_FOUND);
+        }
+
+        return careService.getCareSeniorInfoByManagerAndCareType(managerId, careType);
     }
 }
