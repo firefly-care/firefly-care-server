@@ -18,6 +18,7 @@ import org.farm.fireflyserver.domain.care.persistence.entity.CareResult;
 import org.farm.fireflyserver.domain.care.web.dto.AbsentCareDetailsDto;
 import org.farm.fireflyserver.domain.care.web.dto.CareDto;
 import org.farm.fireflyserver.domain.care.web.dto.NormalCareDetailsDto;
+import org.farm.fireflyserver.domain.manager.web.dto.ManagerDto;
 import org.farm.fireflyserver.domain.senior.persistence.entity.Senior;
 import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorRepository;
 import org.springframework.stereotype.Service;
@@ -127,5 +128,10 @@ public class CareServiceImpl implements CareService {
     @Override
     public List<Long> getSeniorIdsByManagerId(Long managerId) {
         return careRepository.findDistinctSeniorIdsByManagerId(managerId);
+    }
+
+    @Override
+    public List<ManagerDto.CareSeniorInfo> getCareSeniorInfoByManagerAndCareType(Long managerId, Type careType) {
+        return careRepository.getCareSeniorInfoByManagerAndCareType(managerId, careType);
     }
 }
