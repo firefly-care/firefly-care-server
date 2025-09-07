@@ -2,6 +2,7 @@ package org.farm.fireflyserver.domain.led.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.farm.fireflyserver.common.util.BaseCreatedTimeEntity;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @Table(name = "led_history")
-public class LedHistory {
+public class LedHistory extends BaseCreatedTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
