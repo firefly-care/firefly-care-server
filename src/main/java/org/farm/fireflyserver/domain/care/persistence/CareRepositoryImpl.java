@@ -26,7 +26,7 @@ public class CareRepositoryImpl implements CareRepositoryCustom {
 
     @Override
     public List<ManagerDto.CareSeniorInfo> getCareSeniorInfoByManagerAndCareType(Long managerId, Type careType) {
-        List<ManagerDto.CareSeniorInfo> dtos =  queryFactory
+        return queryFactory
                 .select(Projections.constructor(
                         ManagerDto.CareSeniorInfo.class,
                         senior.name,
@@ -46,6 +46,5 @@ public class CareRepositoryImpl implements CareRepositoryCustom {
                         care.type.eq(careType)
                 )
                 .fetch();
-        return dtos;
     }
 }
