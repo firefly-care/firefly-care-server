@@ -3,6 +3,7 @@ package org.farm.fireflyserver.domain.manager.web;
 import lombok.RequiredArgsConstructor;
 import org.farm.fireflyserver.common.response.BaseResponse;
 import org.farm.fireflyserver.common.response.SuccessCode;
+import org.farm.fireflyserver.domain.care.persistence.entity.Type;
 import org.farm.fireflyserver.domain.manager.service.ManagerService;
 import org.farm.fireflyserver.domain.manager.web.dto.ManagerDto;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +36,20 @@ public class ManagerController {
     @GetMapping("/{id}/seniors")
     public BaseResponse<?> getSeniorsByManagerId(@PathVariable Long id) {
         List<ManagerDto.SeniorInfo> dtos = managerService.getSeniorsByManagerId(id);
+
+        return BaseResponse.of(SuccessCode.OK, dtos);
+    }
+
+    @GetMapping("/{id}/call")
+    public BaseResponse<?> getCareCallsByManagerId(@PathVariable Long id) {
+        List<ManagerDto.CareSeniorInfo> dtos = managerService.getCareSeniorInfoByManagerAndCareType(id, Type.CALL);
+
+        return BaseResponse.of(SuccessCode.OK, dtos);
+    }
+
+    @GetMapping("/{id}/visit")
+    public BaseResponse<?> getCareVisitsByManagerId(@PathVariable Long id) {
+        List<ManagerDto.CareSeniorInfo> dtos = managerService.getCareSeniorInfoByManagerAndCareType(id, Type.VISIT);
 
         return BaseResponse.of(SuccessCode.OK, dtos);
     }
