@@ -1,6 +1,9 @@
 package org.farm.fireflyserver.domain.monitoring.service;
 
 import lombok.RequiredArgsConstructor;
+import org.farm.fireflyserver.domain.account.persistence.AccountRepository;
+import org.farm.fireflyserver.domain.account.persistence.entity.Account;
+import org.farm.fireflyserver.domain.account.persistence.entity.Authority;
 import org.farm.fireflyserver.domain.care.persistence.CareRepository;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 import org.farm.fireflyserver.domain.monitoring.web.dto.*;
@@ -9,11 +12,12 @@ import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorReposit
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.util.HashMap;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -22,17 +26,139 @@ public class MonitoringServiceImpl implements MonitoringService {
 
     private final SeniorRepository seniorRepository;
     private final CareRepository careRepository;
+    private final AccountRepository accountRepository;
+
+    // 공통 날짜 포맷터
+    private static final DateTimeFormatter YM_FMT  = DateTimeFormatter.ofPattern("yyyy.MM");
+    private static final DateTimeFormatter YMD_FMT = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+
+    private static LocalDateTime startOfMonth(YearMonth ym) {return ym.atDay(1).atStartOfDay();}
+    private static LocalDateTime endOfMonth(YearMonth ym) {return ym.atEndOfMonth().atTime(23, 59, 59);}
+    private static LocalDateTime startOfDay(LocalDate d) {return d.atStartOfDay();}
+    private static LocalDateTime endOfDay(LocalDate d) {return d.atTime(23, 59, 59);}
+
 
     //메인홈 조회
     @Override
-    public MainHomeDto getMainHome() {
-        SeniorCountDto seniorCount = getSeniorCount();
+    public MainHomeDto getMainHome(String yearMonth, String calendarYearMonth, String calendarDate) {
+        // 월별 돌봄 현황
+        MonthlyCareStateDto monthlyCareState = getMonthlyCareState(yearMonth);
+        // LED 이상 탐지 현황
         SeniorLedStateCountDto seniorStateCount = getSeniorStateCount();
-        MonthlyCareStateDto monthlyCareState = getMonthlyCareState();
-        List<TownStateDto> townState = getTownStateCount();
-        return MainHomeDto.of(seniorCount, seniorStateCount, monthlyCareState, townState);
+        // 담당자 현황
+        List<ManagerStateDto> managerStateDto = getManagerState();
+        // 캘린더 돌봄 현황
+        CalendarCareCountWithMonthDto calendarCareCount = getCalendarCareCount(calendarYearMonth);
+        // 캘린더 돌봄 내역
+        CalendarCareStateWithDateDto calendarCareState = getCalendarCareState(calendarDate);
+
+        return MainHomeDto.of(monthlyCareState, seniorStateCount,managerStateDto,calendarCareCount,calendarCareState);
 
     }
+
+    // 월별 돌봄 현황
+    public MonthlyCareStateDto getMonthlyCareState(String yearMonth) {
+        YearMonth ym = YearMonth.parse(yearMonth, YM_FMT);
+        List<Care> cares = careRepository.findAllByDateBetween(startOfMonth(ym), endOfMonth(ym));
+
+        int totalSeniorCount = seniorRepository.countByIsActiveTrue();
+        int totalManagerCount = accountRepository.countByAuthority(Authority.MNG);
+
+        int call = 0, visit = 0, emergency = 0;
+        for (Care c : cares) {
+            switch (c.getType()) {
+                case CALL -> call++;
+                case VISIT -> visit++;
+                case EMERGENCY -> emergency++;
+            }
+        }
+        int totalCare = call + visit + emergency;
+
+        return MonthlyCareStateDto.of(yearMonth, totalSeniorCount, totalManagerCount, totalCare, call, visit, emergency);
+    }
+
+    // Led 이상 탐지 현황
+    public SeniorLedStateCountDto getSeniorStateCount() {
+        List<Object[]> results = seniorRepository.countByDangerLevel();
+
+        int normalCount = 0, attentionCount = 0, cautionCount = 0, dangerCount = 0;
+
+        for (Object[] row : results) {
+            DangerLevel level = (DangerLevel) row[0];
+            int count = ((Long) row[1]).intValue();
+
+            if (level == null) level = DangerLevel.NORMAL;
+
+            switch (level) {
+                case NORMAL -> normalCount = count;
+                case ATTENTION -> attentionCount = count;
+                case CAUTION -> cautionCount = count;
+                case DANGER -> dangerCount = count;
+            }
+        }
+
+        int ledUseCount = seniorRepository.countByIsActiveTrueAndIsLedUseTrue();
+
+        return SeniorLedStateCountDto.of(ledUseCount, normalCount, attentionCount, cautionCount, dangerCount);
+    }
+
+    // 담당자 현황
+    public List<ManagerStateDto> getManagerState() {
+        List<Account> managers = accountRepository.findAllByAuthority(Authority.MNG);
+
+        return managers.stream().map(manager -> {
+            long careCount = careRepository.countByManagerAccount(manager);
+            long seniorCount = careRepository.countDistinctSeniorByManagerAccount(manager);
+            Care recentCare = careRepository.findTopByManagerAccountOrderByDateDesc(manager);
+            String recentCareDate = formatRecentCareDate(recentCare != null ? recentCare.getDate() : null);
+            return new ManagerStateDto(manager.getName(), (int) seniorCount, (int) careCount, recentCareDate);
+        }).toList();
+    }
+
+    private String formatRecentCareDate(LocalDateTime date) {
+        if (date == null) return "기록 없음";
+        Duration duration = Duration.between(date, LocalDateTime.now());
+        long hours = duration.toHours();
+        long days = duration.toDays();
+        return (hours < 24) ? hours + "시간 전" : days + "일 전";
+    }
+
+
+    // 캘린더 돌봄 현황
+    public CalendarCareCountWithMonthDto getCalendarCareCount(String calendarYearMonth) {
+        YearMonth ym = YearMonth.parse(calendarYearMonth, YM_FMT);
+        List<Object[]> rows = careRepository.countByDateBetweenGroupByDate(startOfMonth(ym), endOfMonth(ym));
+
+        List<CalendarCareCountDto> items = rows.stream()
+                .map(row -> {
+                    Object d0 = row[0];
+                    LocalDate day = (d0 instanceof LocalDate ld) ? ld : ((java.sql.Date) d0).toLocalDate();
+                    int count = ((Number) row[1]).intValue();
+                    return CalendarCareCountDto.of(day.getDayOfMonth(), count);
+                })
+                .toList();
+
+        return CalendarCareCountWithMonthDto.of(calendarYearMonth, items);
+    }
+
+
+
+    // 캘린더 돌봄 내역
+    public CalendarCareStateWithDateDto getCalendarCareState(String calendarDate) {
+        LocalDate target = LocalDate.parse(calendarDate, YMD_FMT);
+        List<Care> cares = careRepository.findAllByDateBetweenOrderByDateDesc(startOfDay(target), endOfDay(target));
+
+        List<CalendarCareStateDto> items = cares.stream()
+                .map(CalendarCareStateDto::from)
+                .toList();
+
+        return CalendarCareStateWithDateDto.of(calendarDate, items);
+    }
+}
+
+   /* ==================================================================
+     * 안쓰는 함수 V1
+     * ==================================================================
 
     // 대상자 수 조회
     private SeniorCountDto getSeniorCount() {
@@ -55,81 +181,6 @@ public class MonitoringServiceImpl implements MonitoringService {
                         ((Long) row[1]).intValue()
                 ))
                 .toList();
-    }
-
-    // Led 이상 탐지 현황
-    private SeniorLedStateCountDto getSeniorStateCount() {
-        List<Object[]> results = seniorRepository.countByDangerLevel();
-
-        int normalCount = 0, attentionCount = 0, cautionCount = 0, dangerCount = 0;
-
-        for (Object[] row : results) {
-            DangerLevel level = (DangerLevel) row[0];
-            int count = ((Long) row[1]).intValue();
-
-            if (level == null) level = DangerLevel.NORMAL;
-
-            switch (level) {
-                case NORMAL -> normalCount = count;
-                case ATTENTION -> attentionCount = count;
-                case CAUTION -> cautionCount = count;
-                case DANGER -> dangerCount = count;
-            }
-        }
-
-        int ledUseCount = seniorRepository.countByIsActiveTrueAndIsLedUseTrue();
-        List<SeniorLedStateDto> seniorLedStates = convertToLedStateDto();
-
-        return SeniorLedStateCountDto.of(ledUseCount, normalCount, attentionCount, cautionCount, dangerCount, seniorLedStates
-        );
-    }
-
-    private List<SeniorLedStateDto> convertToLedStateDto() {
-        return seniorRepository.findByIsActiveTrueAndIsLedUseTrue().stream()
-                .map(senior -> SeniorLedStateDto.from(
-                        senior,
-                        senior.getCareList().stream()
-                                .map(care -> care.getManagerAccount().getName())
-                                .findFirst()
-                                .orElse(null)
-                ))
-                .toList();
-    }
-
-    // 월별 돌봄 현황
-    public MonthlyCareStateDto getMonthlyCareState() {
-        int year = LocalDate.now().getYear();
-        int month = LocalDate.now().getMonthValue();
-        String monthStr = String.format("%04d.%02d", year, month);
-
-        List<Care> cares = getCaresByMonth(year, month);
-
-        int totalCount = seniorRepository.countByIsActiveTrue();
-        int callCount = 0, visitCount = 0, emergencyCount = 0;
-
-        for (Care care : cares) {
-            switch (care.getType()) {
-                case CALL -> callCount++;
-                case VISIT -> visitCount++;
-                case EMERGENCY -> emergencyCount++;
-            }
-        }
-
-        int careCount = callCount + visitCount + emergencyCount;
-
-        return MonthlyCareStateDto.of(monthStr, totalCount, careCount, callCount, visitCount, emergencyCount);
-    }
-
-    // 월별 돌봄 기록 조회
-    private List<Care> getCaresByMonth(int year, int month) {
-        YearMonth targetMonth = YearMonth.of(year, month);
-        LocalDate startDate = targetMonth.atDay(1);
-        LocalDate endDate = targetMonth.atEndOfMonth();
-
-        return careRepository.findAllByDateBetween(
-                startDate.atStartOfDay(),
-                endDate.atTime(23, 59, 59)
-        );
     }
 
     //TODO : 필터링으로 처리
@@ -224,5 +275,30 @@ public class MonitoringServiceImpl implements MonitoringService {
         }
     }
 
+    private List<SeniorLedStateDto> convertToLedStateDto() {
+        return seniorRepository.findByIsActiveTrueAndIsLedUseTrue().stream()
+                .map(senior -> SeniorLedStateDto.from(
+                        senior,
+                        senior.getCareList().stream()
+                                .map(care -> care.getManagerAccount().getName())
+                                .findFirst()
+                                .orElse(null)
+                ))
+                .toList();
+    }
 
-}
+    // 월별 돌봄 기록 조회
+    private List<Care> getCaresByMonth(int year, int month) {
+
+        YearMonth targetMonth = YearMonth.of(year, month);
+        LocalDate startDate = targetMonth.atDay(1);
+        LocalDate endDate = targetMonth.atEndOfMonth();
+
+        return careRepository.findAllByDateBetween(
+                startDate.atStartOfDay(),
+                endDate.atTime(23, 59, 59)
+        );
+    }
+
+*/
+
