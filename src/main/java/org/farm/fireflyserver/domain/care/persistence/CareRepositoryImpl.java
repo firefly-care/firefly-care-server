@@ -36,7 +36,7 @@ public class CareRepositoryImpl implements CareRepositoryCustom {
                                 "TIMESTAMPDIFF(YEAR, {0}, CURDATE())",
                                 senior.birthday
                         ),
-                        care.date,
+                        Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", care.date),
                         care.result
                 ))
                 .from(care)
