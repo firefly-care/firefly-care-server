@@ -3,6 +3,7 @@ package org.farm.fireflyserver.domain.care.persistence.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.farm.fireflyserver.domain.account.persistence.entity.Account;
+import org.farm.fireflyserver.domain.manager.persistence.entity.Manager;
 import org.farm.fireflyserver.domain.senior.persistence.entity.Senior;
 
 
@@ -23,9 +24,14 @@ public class Care extends BaseCreatedTimeEntity {
     private Long careId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "manager_account_id")
+    @Comment("돌봄 담당자 계정")
+    private Account managerAccount;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")
     @Comment("돌봄 담당자")
-    private Account managerAccount;
+    private Manager manager;
 
     @Comment("돌봄 일시")
     private LocalDateTime date;

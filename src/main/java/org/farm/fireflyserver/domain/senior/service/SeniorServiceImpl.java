@@ -6,6 +6,7 @@ import org.farm.fireflyserver.common.response.ErrorCode;
 import org.farm.fireflyserver.domain.account.persistence.entity.Account;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 import org.farm.fireflyserver.domain.led.web.dto.response.LedStateDto;
+import org.farm.fireflyserver.domain.manager.web.dto.ManagerDto;
 import org.farm.fireflyserver.domain.senior.persistence.entity.SeniorStatus;
 import org.farm.fireflyserver.domain.senior.web.dto.request.RequestSeniorDto;
 import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorDetailDto;
@@ -18,6 +19,8 @@ import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorReposit
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -133,5 +136,19 @@ public class SeniorServiceImpl implements SeniorService {
         return latestCare.getManagerAccount();
     }
 
-
+    @Override
+    public List<ManagerDto.SeniorInfo> getSeniorInfoByIds(List<Long> seniorIds) {
+        return seniorRepository.findAllById(seniorIds).stream()
+                .map(senior -> {
+                    long age = Period.between(senior.getBirthday(), LocalDate.now()).getYears();
+                    return new ManagerDto.SeniorInfo(
+                            senior.getSeniorId(),
+                            senior.getName(),
+                            senior.getGender(),
+                            age,
+                            senior.getAddress()
+                    );
+                })
+                .collect(Collectors.toList());
+    }
 }

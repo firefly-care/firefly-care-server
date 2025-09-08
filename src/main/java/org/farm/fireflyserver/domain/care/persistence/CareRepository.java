@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface CareRepository extends JpaRepository<Care, Long> {
+public interface CareRepository extends JpaRepository<Care, Long>, CareRepositoryCustom {
     @Query("SELECT c FROM Care c " +
             "LEFT JOIN c.managerAccount m " +
             "LEFT JOIN c.senior s WHERE " +

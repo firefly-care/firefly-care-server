@@ -1,5 +1,6 @@
 package org.farm.fireflyserver.domain.senior.service;
 
+import org.farm.fireflyserver.domain.manager.web.dto.ManagerDto;
 import org.farm.fireflyserver.domain.senior.web.dto.request.RegisterSeniorDto;
 import org.farm.fireflyserver.domain.senior.web.dto.request.RequestSeniorDto;
 import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorDetailDto;
@@ -16,4 +17,6 @@ public interface SeniorService {
     SeniorDetailDto getSeniorDetail(Long seniorId);
 
     void deactivateSenior(RequestSeniorDto.Deactivate dto);
+
+    List<ManagerDto.SeniorInfo> getSeniorInfoByIds(List<Long> seniorIds);
 }
