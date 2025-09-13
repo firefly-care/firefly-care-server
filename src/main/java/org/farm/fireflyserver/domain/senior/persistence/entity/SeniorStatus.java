@@ -44,4 +44,8 @@ public class SeniorStatus {
     @Enumerated(EnumType.STRING)
     @Comment("위험 등급")
     private DangerLevel dangerLevel;
+
+    public void updateSleepScore(Double sleepScr){
+        this.sleepScr = sleepScr;
+    }
 }
