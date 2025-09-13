@@ -32,4 +32,9 @@ public interface LedHistoryRepository extends JpaRepository<LedHistory, Long> {
       ON l.led_history_id = latest.max_id
     """, nativeQuery = true)
     List<LedHistory> findLatestHistories();
+
+    //특정 대상자의 지정된 시간 범위 내 모든 LED 기록을 시간 순으로 조회
+    List<LedHistory> findByLedMtchnSnAndEventTimeBetweenOrderByEventTimeAsc(
+            String ledMtchnSn, LocalDateTime start, LocalDateTime end
+    );
 }
