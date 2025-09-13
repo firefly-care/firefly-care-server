@@ -5,7 +5,6 @@ import org.farm.fireflyserver.domain.led.persistence.entity.OnOff;
 import org.farm.fireflyserver.domain.led.persistence.entity.SensorGbn;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;

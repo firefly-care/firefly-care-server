@@ -1,7 +1,6 @@
 package org.farm.fireflyserver.domain.senior.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.hibernate.annotations.Comment;
 
