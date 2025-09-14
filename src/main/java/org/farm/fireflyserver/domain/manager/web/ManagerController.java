@@ -6,6 +6,7 @@ import org.farm.fireflyserver.common.response.SuccessCode;
 import org.farm.fireflyserver.domain.care.persistence.entity.Type;
 import org.farm.fireflyserver.domain.manager.service.ManagerService;
 import org.farm.fireflyserver.domain.manager.web.dto.ManagerDto;
+import org.farm.fireflyserver.domain.manager.web.dto.ManagerNameDto;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,4 +54,12 @@ public class ManagerController {
 
         return BaseResponse.of(SuccessCode.OK, dtos);
     }
+
+    //담당자 {이름,전화번호} 리스트
+    @GetMapping("/name")
+    public BaseResponse<?> getManagerNames() {
+        List<ManagerNameDto> managerNameList = managerService.getManagerNameList();
+        return BaseResponse.of(SuccessCode.OK, managerNameList);
+    }
+
 }
