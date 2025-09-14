@@ -12,10 +12,7 @@ import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorReposit
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.YearMonth;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -86,7 +83,6 @@ public class MonitoringServiceImpl implements MonitoringService {
         for (Object[] row : results) {
             DangerLevel level = (DangerLevel) row[0];
             int count = ((Long) row[1]).intValue();
-
             if (level == null) level = DangerLevel.NORMAL;
 
             switch (level) {
@@ -99,7 +95,17 @@ public class MonitoringServiceImpl implements MonitoringService {
 
         int ledUseCount = seniorRepository.countByIsActiveTrueAndIsLedUseTrue();
 
-        return SeniorLedStateCountDto.of(ledUseCount, normalCount, attentionCount, cautionCount, dangerCount);
+        LocalTime recentUpdateTime = getRecentUpdateTime();
+
+        return SeniorLedStateCountDto.of(recentUpdateTime, ledUseCount, normalCount, attentionCount, cautionCount, dangerCount);
+    }
+
+    //최근 업데이트 시간
+    private LocalTime getRecentUpdateTime() {
+        LocalTime now = LocalTime.now();
+        //업데이트 단위(5분) 기준 가장 가까운 시간
+        int minute = now.getMinute()/5*5;
+        return LocalTime.of(now.getHour(), minute);
     }
 
     // 담당자 현황
