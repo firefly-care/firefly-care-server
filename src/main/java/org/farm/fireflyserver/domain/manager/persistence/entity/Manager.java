@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.farm.fireflyserver.domain.account.persistence.entity.Account;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 import org.hibernate.annotations.Comment;
 
@@ -58,4 +59,8 @@ public class Manager {
 
     @OneToMany(mappedBy = "manager")
     private List<Care> careList = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
 }
