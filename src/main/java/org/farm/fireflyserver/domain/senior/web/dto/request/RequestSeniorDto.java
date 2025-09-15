@@ -4,4 +4,7 @@ public class RequestSeniorDto {
     public record Deactivate (
             Long seniorId
     ){}
+
+    public record UpdateSleepScore(String ledMtchnSn, Double sleepScore) {}
 }
+

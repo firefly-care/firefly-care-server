@@ -8,6 +8,7 @@ import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 import org.farm.fireflyserver.domain.led.web.dto.response.LedStateDto;
 import org.farm.fireflyserver.domain.manager.web.dto.ManagerDto;
 import org.farm.fireflyserver.domain.senior.persistence.entity.SeniorStatus;
+import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorStatusRepository;
 import org.farm.fireflyserver.domain.senior.web.dto.request.RequestSeniorDto;
 import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorDetailDto;
 import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorInfoDto;
@@ -23,6 +24,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +34,7 @@ public class SeniorServiceImpl implements SeniorService {
 
     private final SeniorRepository seniorRepository;
     private final SeniorMapper seniorMapper;
+    private final SeniorStatusRepository seniorStatusRepository;
 
     @Transactional
     public void registerSenior(RegisterSeniorDto dto) {
@@ -122,6 +125,23 @@ public class SeniorServiceImpl implements SeniorService {
         Senior senior = seniorRepository.findById(dto.seniorId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SENIOR_NOT_FOUND));
         senior.deactivate();
+    }
+
+    @Override
+    public void updateSleepScore(RequestSeniorDto.UpdateSleepScore dto) {
+        Optional<Senior> seniorOptional = seniorRepository.findByLedMtchnSn(dto.ledMtchnSn());
+        if (seniorOptional.isPresent()) {
+            Senior senior = seniorOptional.get();
+            SeniorStatus seniorStatus = senior.getSeniorStatus();
+            if (seniorStatus != null) {
+                seniorStatus.updateSleepScore(dto.sleepScore());
+                seniorStatusRepository.save(seniorStatus);
+            } else {
+                System.out.println("해당 어르신에 대한 상태 정보(SeniorStatus)가 없습니다: " + senior.getName());
+            }
+        } else {
+            System.out.println("해당 LED 장치 번호와 일치하는 어르신 정보가 없습니다: " + dto.ledMtchnSn());
+        }
     }
 
     private Account getManagerAccount(Senior senior) {

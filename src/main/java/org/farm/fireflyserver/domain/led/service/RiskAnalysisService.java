@@ -4,10 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.farm.fireflyserver.domain.led.persistence.entity.LedHistory;
 import org.farm.fireflyserver.domain.led.persistence.repository.LedHistoryRepository;
-import org.farm.fireflyserver.domain.senior.persistence.entity.Senior;
-import org.farm.fireflyserver.domain.senior.persistence.entity.SeniorStatus;
-import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorRepository;
-import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorStatusRepository;
+import org.farm.fireflyserver.domain.senior.service.SeniorService;
+import org.farm.fireflyserver.domain.senior.web.dto.request.RequestSeniorDto;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -15,15 +13,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class RiskAnalysisService {
     private final LedHistoryRepository ledHistoryRepository;
     private final SleepScoreCalculator sleepScoreCalculator;
-    private final SeniorStatusRepository seniorStatusRepository;
-    private final SeniorRepository seniorRepository;
+    private final SeniorService seniorService;
 
     @Transactional
     public void analyzeSleepRiskForDevice(String ledMtchnSn, LocalDate analysisDate) {
@@ -49,19 +45,7 @@ public class RiskAnalysisService {
         Map<String, Object> scoreResult = sleepScoreCalculator.calculate(nightEvents);
 
         //4. 결과 저장
-        Optional<Senior> seniorOptional = seniorRepository.findByLedMtchnSn(ledMtchnSn);
-        if (seniorOptional.isPresent()) {
-            Senior senior = seniorOptional.get();
-            SeniorStatus seniorStatus = senior.getSeniorStatus();
-            if (seniorStatus != null) {
-                Double finalScore = (Double) scoreResult.get("finalScore");
-                seniorStatus.updateSleepScore(finalScore);
-                seniorStatusRepository.save(seniorStatus);
-            } else {
-                System.out.println("해당 어르신에 대한 상태 정보(SeniorStatus)가 없습니다: " + senior.getName());
-            }
-        } else {
-            System.out.println("해당 LED 장치 번호와 일치하는 어르신 정보가 없습니다: " + ledMtchnSn);
-        }
+        Double finalScore = (Double) scoreResult.get("finalScore");
+        seniorService.updateSleepScore(new RequestSeniorDto.UpdateSleepScore(ledMtchnSn, finalScore));
     }
 }
