@@ -1,6 +1,7 @@
 package org.farm.fireflyserver.domain.senior.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.farm.fireflyserver.common.exception.EntityNotFoundException;
 import org.farm.fireflyserver.common.response.ErrorCode;
 import org.farm.fireflyserver.domain.account.persistence.entity.Account;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -140,10 +142,10 @@ public class SeniorServiceImpl implements SeniorService {
                 seniorStatus.updateScores(sleepScr, memoryScr, lowEngScr, dangerRt);
                 seniorStatusRepository.save(seniorStatus);
             } else {
-                System.out.println("해당 어르신에 대한 상태 정보(SeniorStatus)가 없습니다: " + senior.getName());
+                log.warn("해당 어르신에 대한 상태 정보(SeniorStatus)가 없습니다: " + senior.getName());
             }
         } else {
-            System.out.println("해당 LED 장치 번호와 일치하는 어르신 정보가 없습니다: " + ledMtchnSn);
+            log.warn("해당 LED 장치 번호와 일치하는 어르신 정보가 없습니다: " + ledMtchnSn);
         }
     }
 
