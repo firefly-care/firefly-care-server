@@ -18,7 +18,7 @@ public class AnomalyAnalysisScheduler {
     private final AnomalyAnalysisService riskAnalysisService;
     private final SeniorRepository seniorRepository;
 
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 0 2 * * ?")
     public void runDailyAnalysis() {
         LocalDate yesterday = LocalDate.now().minusDays(1);
         log.info("===== " + yesterday + "의 일일 이상 징후 분석을 시작합니다. =====");
