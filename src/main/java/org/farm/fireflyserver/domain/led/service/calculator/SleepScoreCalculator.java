@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class SleepScoreCalculator implements ScoreCalculator{
+public class SleepScoreCalculator implements ScoreCalculator {
     @Override
     public AnomalyType getAnomalyType() {
         return AnomalyType.SLEEP;
