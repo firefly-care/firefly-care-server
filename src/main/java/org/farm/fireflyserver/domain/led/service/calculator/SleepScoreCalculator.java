@@ -1,5 +1,6 @@
 package org.farm.fireflyserver.domain.led.service.calculator;
 
+import lombok.extern.slf4j.Slf4j;
 import org.farm.fireflyserver.domain.led.persistence.AnomalyType;
 import org.farm.fireflyserver.domain.led.persistence.entity.LedHistory;
 import org.farm.fireflyserver.domain.led.persistence.entity.OnOff;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class SleepScoreCalculator implements ScoreCalculator{
     @Override
@@ -22,8 +24,10 @@ public class SleepScoreCalculator implements ScoreCalculator{
     }
     
     public Double calculate(List<LedHistory> events) {
+        log.info("[SleepScoreCalculator] 계산 시작. 입력된 이벤트 수: {}", events != null ? events.size() : 0);
         // 데이터가 없는 경우, 오류 방지를 위해 0점 처리
         if (events == null || events.isEmpty()) {
+            log.warn("[SleepScoreCalculator] 입력된 이벤트가 없어 0.0을 반환합니다.");
             return 0.0;
         }
 
@@ -41,15 +45,18 @@ public class SleepScoreCalculator implements ScoreCalculator{
                     return !eventTime.isBefore(nightStart) && eventTime.isBefore(nightEnd);
                 })
                 .toList();
+        log.info("[SleepScoreCalculator] 야간 이벤트 필터링 완료. 야간 이벤트 수: {}", nightEvents.size());
 
         // 야간에 발생한 이벤트가 없으면 수면 점수 0점 (가장 좋은 상태)
         if (nightEvents.isEmpty()){
+            log.info("[SleepScoreCalculator] 야간 이벤트가 없어 0.0을 반환합니다.");
             return 0.0;
         }
 
         int n1Count = calculateNightlyActivations(nightEvents);
         int n2Count = calculateShortToggles(nightEvents);
         int n3Count = calculateFragmentedBlocks(nightEvents);
+        log.info("[SleepScoreCalculator] 중간 계산 완료: [n1Count={}, n2Count={}, n3Count={}]", n1Count, n2Count, n3Count);
 
         // 횟수를 점수로 변환
         Map<String, Double> riskScores = convertCountsToRiskScores(n1Count, n2Count, n3Count);
@@ -61,8 +68,11 @@ public class SleepScoreCalculator implements ScoreCalculator{
 
         //최종 수면 점수
         double sSleep = Math.min(1.0, rs1 + rs2 + rs3);
+        double finalScore = sSleep * 45;
+        log.info("[SleepScoreCalculator] 최종 계산된 점수: {}", finalScore);
+        
         //최종 점수
-        return sSleep * 45;
+        return finalScore;
     }
 
     // N1. 야간 활성 횟수

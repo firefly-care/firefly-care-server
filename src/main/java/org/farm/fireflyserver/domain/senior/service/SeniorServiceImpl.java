@@ -127,6 +127,7 @@ public class SeniorServiceImpl implements SeniorService {
         senior.deactivate();
     }
 
+    @Transactional
     @Override
     public void updateSeniorStatus(String ledMtchnSn, Double sleepScr, Double memoryScr, Double lowEngScr, Double dangerRt) {
         Optional<Senior> seniorOptional = seniorRepository.findByLedMtchnSn(ledMtchnSn);

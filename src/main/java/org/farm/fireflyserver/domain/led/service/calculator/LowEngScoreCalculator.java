@@ -1,9 +1,12 @@
 package org.farm.fireflyserver.domain.led.service.calculator;
 
+import lombok.extern.slf4j.Slf4j;
 import org.farm.fireflyserver.domain.led.persistence.AnomalyType;
 import org.farm.fireflyserver.domain.led.persistence.entity.LedHistory;
 import org.farm.fireflyserver.domain.led.persistence.entity.OnOff;
+
 import org.farm.fireflyserver.domain.led.persistence.entity.SensorGbn;
+import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -14,13 +17,22 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
+@Component
 public class LowEngScoreCalculator implements ScoreCalculator {
+
     @Override
     public AnomalyType getAnomalyType() {
         return AnomalyType.LOWENG;
     }
 
     public Double calculate(List<LedHistory> allEvents) {
+        log.info("[LowEngScoreCalculator] 계산 시작. 입력된 이벤트 수: {}", allEvents != null ? allEvents.size() : 0);
+        if (allEvents == null || allEvents.isEmpty()) {
+            log.warn("[LowEngScoreCalculator] 입력된 이벤트가 없어 0.0을 반환합니다.");
+            return 0.0;
+        }
+
         // 주간(07:00 ~ 21:59) 이벤트만 필터링
         LocalTime dayStart = LocalTime.of(7, 0);
         LocalTime dayEnd = LocalTime.of(21, 59, 59);
@@ -31,11 +43,13 @@ public class LowEngScoreCalculator implements ScoreCalculator {
                     return !eventTime.isBefore(dayStart) && !eventTime.isAfter(dayEnd);
                 })
                 .toList();
+        log.info("[LowEngScoreCalculator] 주간 이벤트 필터링 완료. 주간 이벤트 수: {}", daytimeEvents.size());
 
         // 각 기준별 값 계산
         long l1TotalTime = calculateTotalLightingTime(daytimeEvents);
         int l2ActivationCount = calculateActivationCount(daytimeEvents);
         int l3UniqueRoomCount = calculateUniqueRoomCount(daytimeEvents);
+        log.info("[LowEngScoreCalculator] 중간 계산 완료: [l1TotalTime={}, l2ActivationCount={}, l3UniqueRoomCount={}]", l1TotalTime, l2ActivationCount, l3UniqueRoomCount);
 
         // 계산된 값을 위험 지수(rl)로 변환
         Map<String, Double> riskScores = convertValuesToRiskScores(l1TotalTime, l2ActivationCount, l3UniqueRoomCount);
@@ -47,9 +61,11 @@ public class LowEngScoreCalculator implements ScoreCalculator {
 
         // 최종 무기력증 의심 지수 (S_leth) 계산
         double sLeth = Math.min(1.0, rl1 + rl2 + rl3);
+        double finalScore = sLeth * 20;
+        log.info("[LowEngScoreCalculator] 최종 계산된 점수: {}", finalScore);
 
         // 최종 점수 반환
-        return sLeth * 20;
+        return finalScore;
     }
 
     /**

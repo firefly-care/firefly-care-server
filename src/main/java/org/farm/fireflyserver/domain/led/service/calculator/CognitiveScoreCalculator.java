@@ -1,9 +1,12 @@
 package org.farm.fireflyserver.domain.led.service.calculator;
 
+import lombok.extern.slf4j.Slf4j;
 import org.farm.fireflyserver.domain.led.persistence.AnomalyType;
 import org.farm.fireflyserver.domain.led.persistence.entity.LedHistory;
 import org.farm.fireflyserver.domain.led.persistence.entity.OnOff;
+
 import org.farm.fireflyserver.domain.led.persistence.entity.SensorGbn;
+import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -13,7 +16,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
+@Component
 public class CognitiveScoreCalculator implements ScoreCalculator {
+
     @Override
     public AnomalyType getAnomalyType() {
         return AnomalyType.COGNITIVE;
@@ -21,11 +27,18 @@ public class CognitiveScoreCalculator implements ScoreCalculator {
 
     @Override
     public Double calculate(List<LedHistory> allEvents) {
+        log.info("[CognitiveScoreCalculator] 계산 시작. 입력된 이벤트 수: {}", allEvents != null ? allEvents.size() : 0);
+        if (allEvents == null || allEvents.isEmpty()) {
+            log.warn("[CognitiveScoreCalculator] 입력된 이벤트가 없어 0.0을 반환합니다.");
+            return 0.0;
+        }
+
         // 각 기준별 발생 횟수 계산
         int c1Count = calculatePingPongMovement(allEvents);
         int c2Count = calculateRepetitiveReentry(allEvents);
         int c3Count = calculateForgettingToTurnOffLights(allEvents);
         int c4Count = calculateNightWandering(allEvents);
+        log.info("[CognitiveScoreCalculator] 중간 계산 완료: [c1Count={}, c2Count={}, c3Count={}, c4Count={}]", c1Count, c2Count, c3Count, c4Count);
 
         // 계산된 횟수를 위험 지수(rc)로 변환
         Map<String, Double> riskScores = convertCountsToRiskScores(c1Count, c2Count, c3Count, c4Count);
@@ -38,9 +51,11 @@ public class CognitiveScoreCalculator implements ScoreCalculator {
 
         // 최종 인지 저하 의심 지수 (S_cog) 계산
         double sCog = Math.min(1.0, rc1 + rc2 + rc3 + rc4);
+        double finalScore = sCog * 35;
+        log.info("[CognitiveScoreCalculator] 최종 계산된 점수: {}", finalScore);
 
         // 최종 점수 반환
-        return sCog * 35;
+        return finalScore;
     }
 
     //C1. 핑퐁 이동: 서로 다른 두 방을 30분 이내에 5회 이상 번갈아 켠 경우
