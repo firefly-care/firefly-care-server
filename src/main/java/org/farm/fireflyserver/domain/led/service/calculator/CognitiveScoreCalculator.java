@@ -9,6 +9,7 @@ import org.farm.fireflyserver.domain.led.persistence.entity.SensorGbn;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -151,16 +152,20 @@ public class CognitiveScoreCalculator implements ScoreCalculator {
         return forgotCount;
     }
 
-    //C4. 야간 순회: 23:00~익일 06:59 사이에 3개 이상의 방을 10분 간격으로 연속 방문한 경우
+    //C4. 야간 순회: 23:00~익일 07:00 사이에 3개 이상의 방을 10분 간격으로 연속 방문한 경우
     private int calculateNightWandering(List<LedHistory> events) {
-        LocalTime nightStart = LocalTime.of(23, 0);
-        LocalTime nightEnd = LocalTime.of(6, 59);
+        if (events.isEmpty()) {
+            return 0;
+        }
+        LocalDate analysisDate = events.get(0).getEventTime().toLocalDate();
+        LocalDateTime nightStart = analysisDate.atTime(LocalTime.of(23, 0));
+        LocalDateTime nightEnd = analysisDate.plusDays(1).atTime(LocalTime.of(7, 0));
 
         List<LedHistory> nightOnEvents = events.stream()
                 .filter(e -> e.getOnOff() == OnOff.ON)
                 .filter(e -> {
-                    LocalTime eventTime = e.getEventTime().toLocalTime();
-                    return !eventTime.isBefore(nightStart) || !eventTime.isAfter(nightEnd);
+                    LocalDateTime eventTime = e.getEventTime();
+                    return !eventTime.isBefore(nightStart) && eventTime.isBefore(nightEnd);
                 })
                 .toList();
 
