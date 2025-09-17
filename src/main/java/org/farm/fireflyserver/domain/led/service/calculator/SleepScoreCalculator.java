@@ -1,19 +1,52 @@
-package org.farm.fireflyserver.domain.led.service;
+package org.farm.fireflyserver.domain.led.service.calculator;
 
+import org.farm.fireflyserver.domain.led.persistence.AnomalyType;
 import org.farm.fireflyserver.domain.led.persistence.entity.LedHistory;
 import org.farm.fireflyserver.domain.led.persistence.entity.OnOff;
 import org.farm.fireflyserver.domain.led.persistence.entity.SensorGbn;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Component
-public class SleepScoreCalculator {
-    public Map<String, Object> calculate(List<LedHistory> nightEvents) {
+public class SleepScoreCalculator implements ScoreCalculator{
+    @Override
+    public AnomalyType getAnomalyType() {
+        return AnomalyType.SLEEP;
+    }
+    
+    public Double calculate(List<LedHistory> events) {
+        // 데이터가 없는 경우, 오류 방지를 위해 0점 처리
+        if (events == null || events.isEmpty()) {
+            return 0.0;
+        }
+
+        // 분석 기준이 되는 날짜를 첫 번째 이벤트에서 추출
+        LocalDate analysisDate = events.get(0).getEventTime().toLocalDate();
+
+        // 야간 시간대를 정의 (분석일 23:00 ~ 다음날 07:00 이전)
+        LocalDateTime nightStart = analysisDate.atTime(LocalTime.of(23, 0));
+        LocalDateTime nightEnd = analysisDate.plusDays(1).atTime(LocalTime.of(7, 0));
+
+        // 전체 이벤트에서 야간 시간대에 해당하는 이벤트만 필터링
+        List<LedHistory> nightEvents = events.stream()
+                .filter(event -> {
+                    LocalDateTime eventTime = event.getEventTime();
+                    return !eventTime.isBefore(nightStart) && eventTime.isBefore(nightEnd);
+                })
+                .toList();
+
+        // 야간에 발생한 이벤트가 없으면 수면 점수 0점 (가장 좋은 상태)
+        if (nightEvents.isEmpty()){
+            return 0.0;
+        }
+
         int n1Count = calculateNightlyActivations(nightEvents);
         int n2Count = calculateShortToggles(nightEvents);
         int n3Count = calculateFragmentedBlocks(nightEvents);
@@ -29,20 +62,7 @@ public class SleepScoreCalculator {
         //최종 수면 점수
         double sSleep = Math.min(1.0, rs1 + rs2 + rs3);
         //최종 점수
-        double finalScore = sSleep * 45;
-
-        // 상세 결과를 Map으로 저장
-        Map<String, Object> details = new HashMap<>();
-        details.put("n1_count", n1Count);
-        details.put("n2_count", n2Count);
-        details.put("n3_count", n3Count);
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("finalScore", finalScore);
-        result.put("sSleep", sSleep);
-        result.put("details", details);
-
-        return result;
+        return sSleep * 45;
     }
 
     // N1. 야간 활성 횟수
