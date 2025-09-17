@@ -5,6 +5,12 @@ public class RequestSeniorDto {
             Long seniorId
     ){}
 
-    public record UpdateSleepScore(String ledMtchnSn, Double sleepScore) {}
+    public record UpdateScore(
+            String ledMtchnSn,
+            Double sleepScr,
+            Double memoryScr,
+            Double lowEngScr,
+            Double dangerRt
+    ) {}
 }
 

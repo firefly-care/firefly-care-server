@@ -20,5 +20,5 @@ public interface SeniorService {
 
     List<ManagerDto.SeniorInfo> getSeniorInfoByIds(List<Long> seniorIds);
 
-    void updateSleepScore(RequestSeniorDto.UpdateSleepScore dto);
+    void updateSeniorStatus(String ledMtchnSn, Double sleepScr, Double memoryScr, Double lowEngScr, Double dangerRt);
 }

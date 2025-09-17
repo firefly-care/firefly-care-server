@@ -128,19 +128,21 @@ public class SeniorServiceImpl implements SeniorService {
     }
 
     @Override
-    public void updateSleepScore(RequestSeniorDto.UpdateSleepScore dto) {
-        Optional<Senior> seniorOptional = seniorRepository.findByLedMtchnSn(dto.ledMtchnSn());
+    public void updateSeniorStatus(String ledMtchnSn, Double sleepScr, Double memoryScr, Double lowEngScr, Double dangerRt) {
+        Optional<Senior> seniorOptional = seniorRepository.findByLedMtchnSn(ledMtchnSn);
+
         if (seniorOptional.isPresent()) {
             Senior senior = seniorOptional.get();
             SeniorStatus seniorStatus = senior.getSeniorStatus();
+
             if (seniorStatus != null) {
-                seniorStatus.updateSleepScore(dto.sleepScore());
+                seniorStatus.updateScores(sleepScr, memoryScr, lowEngScr, dangerRt);
                 seniorStatusRepository.save(seniorStatus);
             } else {
                 System.out.println("해당 어르신에 대한 상태 정보(SeniorStatus)가 없습니다: " + senior.getName());
             }
         } else {
-            System.out.println("해당 LED 장치 번호와 일치하는 어르신 정보가 없습니다: " + dto.ledMtchnSn());
+            System.out.println("해당 LED 장치 번호와 일치하는 어르신 정보가 없습니다: " + ledMtchnSn);
         }
     }
 
