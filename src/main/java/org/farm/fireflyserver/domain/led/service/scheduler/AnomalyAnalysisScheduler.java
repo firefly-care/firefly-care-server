@@ -1,7 +1,7 @@
 package org.farm.fireflyserver.domain.led.service.scheduler;
 
 import lombok.RequiredArgsConstructor;
-import org.farm.fireflyserver.domain.led.service.RiskAnalysisService;
+import org.farm.fireflyserver.domain.led.service.AnomalyAnalysisService;
 import org.farm.fireflyserver.domain.senior.persistence.entity.Senior;
 import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorRepository;
 import org.slf4j.Logger;
@@ -14,9 +14,9 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class RiskAnalysisScheduler {
-    private static final Logger log = LoggerFactory.getLogger(RiskAnalysisScheduler.class);
-    private final RiskAnalysisService riskAnalysisService;
+public class AnomalyAnalysisScheduler {
+    private static final Logger log = LoggerFactory.getLogger(AnomalyAnalysisScheduler.class);
+    private final AnomalyAnalysisService riskAnalysisService;
     private final SeniorRepository seniorRepository;
 
     @Scheduled(cron = "0 0 2 * * ?")
