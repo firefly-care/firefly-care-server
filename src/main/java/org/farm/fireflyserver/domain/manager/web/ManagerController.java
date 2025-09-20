@@ -65,6 +65,7 @@ public class ManagerController {
     }
 
     //담당자 등록
+    @Operation(summary = "돌봄 담당자 등록", description = "돌봄 담당자 등록 API. `accountId`는 로그인으로 받은 계정의 ID를 입력, `imageUrl`은 presigned URL로 업로드한 이미지의 URL을 입력")
     @PostMapping
     public BaseResponse<?> registerManager(@RequestBody ManagerRegisterDto dto) {
         managerService.registerManager(dto);
