@@ -63,4 +63,10 @@ public class Manager {
     @OneToOne
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
+
+    //돌봄 등록 시 careCnt 1 증가, recentCareDate 오늘 날짜로 변경
+    public void addCare() {
+        this.careCnt++;
+        this.recentCareDate = LocalDate.now();
+    }
 }
