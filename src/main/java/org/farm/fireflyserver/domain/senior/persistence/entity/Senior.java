@@ -35,9 +35,6 @@ public class Senior extends BaseCreatedTimeEntity {
     @Comment("성별")
     private Gender gender;
 
-    @Comment("고위험군 여부")
-    private boolean isHighRisk;
-
     @Enumerated(EnumType.STRING)
     @Comment("보장 유형")
     private BenefitType benefitType;
@@ -46,12 +43,12 @@ public class Senior extends BaseCreatedTimeEntity {
     private LocalDate birthday;
 
     @Column(length = 25)
-    @Comment("휴대 전화번호")
+    @Comment("주 연락처")
     private String phoneNum;
 
     @Column(length = 25)
-    @Comment("집 전화번호")
-    private String homePhoneNum;
+    @Comment("부 연락처")
+    private String subPhoneNum;
 
     @Column(length = 25)
     @Comment("우편번호")
@@ -60,10 +57,6 @@ public class Senior extends BaseCreatedTimeEntity {
     @Column(length = 50)
     @Comment("주소")
     private String address;
-
-    @Column(length = 25)
-    @Comment("읍면동")
-    private String town;
 
     @Column(length = 10)
     @Comment("보호자 이름")
@@ -84,8 +77,8 @@ public class Senior extends BaseCreatedTimeEntity {
     @Comment("LED 사용 여부")
     private boolean isLedUse;
 
-    @Comment("AMI 사용 여부")
-    private boolean isAmiUse;
+    @Comment("LED 식별 번호")
+    private String ledMtchnSn;
 
     @OneToMany(mappedBy = "senior")
     private List<Care> careList = new ArrayList<>();
