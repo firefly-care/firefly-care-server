@@ -54,8 +54,6 @@ public class SeniorController {
         return BaseResponse.of(SuccessCode.OK, seniorInfo);
     }
 
-
-
     @Operation(summary = "대상자 상세 정보 조회", description = "특정 대상자의 상세 정보를 조회")
     @GetMapping("/{seniorId}")
     public BaseResponse<SeniorDetailDto> getSeniorDetail(@Parameter(description = "대상자 식별자") @PathVariable Long seniorId) {

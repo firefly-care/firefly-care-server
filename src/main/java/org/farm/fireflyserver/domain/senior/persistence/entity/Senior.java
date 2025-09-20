@@ -21,8 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-@AttributeOverride(name = "createdAt", column = @Column(columnDefinition = "TIMESTAMP COMMENT '서비스 시작일'"))
-public class Senior extends BaseCreatedTimeEntity {
+public class Senior {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,6 +79,9 @@ public class Senior extends BaseCreatedTimeEntity {
 
     @Comment("LED 식별 번호")
     private String ledMtchnSn;
+
+    @Comment("서비스 시작일")
+    private LocalDate serviceStartDate;
 
     @OneToMany(mappedBy = "senior")
     private List<Care> careList = new ArrayList<>();
