@@ -9,10 +9,8 @@ import org.farm.fireflyserver.domain.care.persistence.entity.Type;
 import org.farm.fireflyserver.domain.manager.service.ManagerService;
 import org.farm.fireflyserver.domain.manager.web.dto.ManagerDto;
 import org.farm.fireflyserver.domain.manager.web.dto.ManagerNameDto;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.farm.fireflyserver.domain.manager.web.dto.ManagerRegisterDto;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -65,5 +63,13 @@ public class ManagerController {
         List<ManagerNameDto> managerNameList = managerService.getManagerNameList();
         return BaseResponse.of(SuccessCode.OK, managerNameList);
     }
+
+    //담당자 등록
+    @PostMapping
+    public BaseResponse<?> registerManager(@RequestBody ManagerRegisterDto dto) {
+        managerService.registerManager(dto);
+        return BaseResponse.of(SuccessCode.OK);
+    }
+
 
 }

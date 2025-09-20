@@ -9,6 +9,8 @@ public record RegisterSeniorDto(
         String name,
         Gender gender,
         LocalDate birthday,
+        BenefitType benefitType,   //보장 유형
+        String managerName,
         String address,
         String town,
         String phoneNum,
@@ -17,7 +19,7 @@ public record RegisterSeniorDto(
         String guardianName,
         String guardianPhoneNum,
         Boolean isHighRisk,
-        BenefitType benefitType,
+
         String memo
 ) {
 
