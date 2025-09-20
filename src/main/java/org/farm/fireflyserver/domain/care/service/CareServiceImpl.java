@@ -46,8 +46,6 @@ public class CareServiceImpl implements CareService {
         Senior senior = seniorRepository.findById(dto.getSenior_id())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SENIOR_NOT_FOUND));
 
-        manager.addCare();
-
         Result result;
         if ("COMPLETED".equalsIgnoreCase(dto.getResult())) {
             result = Result.NORMAL;
@@ -66,6 +64,9 @@ public class CareServiceImpl implements CareService {
                 .build();
 
         careRepository.save(care);
+
+        //돌봄이 등록 된 후 manager 테이블을 업데이트합니다.
+        manager.addCare();
 
         if (dto.getDetails() instanceof NormalCareDetailsDto details) {
             CareResult careResult = careMapper.toCareResult(details, care);
