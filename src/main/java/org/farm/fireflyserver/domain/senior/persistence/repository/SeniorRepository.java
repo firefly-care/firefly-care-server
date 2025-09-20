@@ -18,7 +18,7 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
     @Query("""
        SELECT DISTINCT s FROM Senior s
        LEFT JOIN s.careList c
-       LEFT JOIN c.managerAccount m
+       LEFT JOIN c.manager m
        LEFT JOIN s.seniorStatus ss
        WHERE (:isActive IS NULL OR s.isActive = :isActive)
          AND (
@@ -48,7 +48,7 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
     @Query("SELECT s FROM Senior s " +
            "LEFT JOIN FETCH s.seniorStatus " +
            "LEFT JOIN FETCH s.careList c " +
-           "LEFT JOIN FETCH c.managerAccount " +
+           "LEFT JOIN FETCH c.manager " +
            "WHERE s.seniorId = :seniorId")
     Optional<Senior> findSeniorDetailById(@Param("seniorId") Long seniorId);
 }

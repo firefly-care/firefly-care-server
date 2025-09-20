@@ -6,6 +6,8 @@ import org.farm.fireflyserver.domain.account.persistence.entity.Account;
 import org.farm.fireflyserver.domain.account.persistence.entity.Authority;
 import org.farm.fireflyserver.domain.care.persistence.CareRepository;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
+import org.farm.fireflyserver.domain.manager.persistence.ManagerRepository;
+import org.farm.fireflyserver.domain.manager.persistence.entity.Manager;
 import org.farm.fireflyserver.domain.monitoring.web.dto.*;
 import org.farm.fireflyserver.domain.senior.persistence.entity.DangerLevel;
 import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorRepository;
@@ -23,6 +25,7 @@ public class MonitoringServiceImpl implements MonitoringService {
 
     private final SeniorRepository seniorRepository;
     private final CareRepository careRepository;
+    private final ManagerRepository managerRepository;
     private final AccountRepository accountRepository;
 
     // 공통 날짜 포맷터
@@ -110,12 +113,11 @@ public class MonitoringServiceImpl implements MonitoringService {
 
     // 담당자 현황
     public List<ManagerStateDto> getManagerState() {
-        List<Account> managers = accountRepository.findAllByAuthority(Authority.MNG);
-
+        List<Manager> managers = managerRepository.findAll();
         return managers.stream().map(manager -> {
-            long careCount = careRepository.countByManagerAccount(manager);
-            long seniorCount = careRepository.countDistinctSeniorByManagerAccount(manager);
-            Care recentCare = careRepository.findTopByManagerAccountOrderByDateDesc(manager);
+            long careCount = careRepository.countByManager(manager);
+            long seniorCount = careRepository.countDistinctSeniorByManager(manager);
+            Care recentCare = careRepository.findTopByManagerOrderByDateDesc(manager);
             String recentCareDate = formatRecentCareDate(recentCare != null ? recentCare.getDate() : null);
             return new ManagerStateDto(manager.getName(), (int) seniorCount, (int) careCount, recentCareDate);
         }).toList();

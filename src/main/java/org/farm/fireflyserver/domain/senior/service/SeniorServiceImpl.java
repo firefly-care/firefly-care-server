@@ -69,18 +69,13 @@ public class SeniorServiceImpl implements SeniorService {
 
     // 대상자 담당자 정보
     private String[] getManagerInfo(Senior senior) {
-        // 가장 최근 돌봄 이력
-        Care latestCare = senior.getCareList().stream()
-                .max(Comparator.comparing(Care::getDate))
-                .orElse(null);
+        Manager manager = senior.getManager();
 
-        if (latestCare == null) {
-            return new String[]{null, null};
-        }
-
+        String name = manager.getName();
+        String phone = manager.getPhoneNum();
         return new String[]{
-                latestCare.getManagerAccount().getName(),
-                latestCare.getManagerAccount().getPhoneNum()
+                name != null ? name : "",
+                phone != null ? phone : ""
         };
     }
 
@@ -115,17 +110,14 @@ public class SeniorServiceImpl implements SeniorService {
         Senior senior = seniorRepository.findSeniorDetailById(seniorId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ENTITY_NOT_FOUND));
 
-        Account managerAccount = getManagerAccount(senior);
-        if (managerAccount == null) {
-            managerAccount = new Account();
-        }
+        Manager manager = senior.getManager();
 
         SeniorStatus seniorStatus = senior.getSeniorStatus();
         if (seniorStatus == null) {
             seniorStatus = new SeniorStatus();
         }
 
-        return SeniorDetailDto.fromEntities(senior, seniorStatus, managerAccount);
+        return SeniorDetailDto.fromEntities(senior, seniorStatus, manager.getAccount());
     }
 
     @Transactional
@@ -136,17 +128,6 @@ public class SeniorServiceImpl implements SeniorService {
         senior.deactivate();
     }
 
-    private Account getManagerAccount(Senior senior) {
-        Care latestCare = senior.getCareList().stream()
-                .max(Comparator.comparing(Care::getDate))
-                .orElse(null);
-
-        if (latestCare == null) {
-            return null;
-        }
-
-        return latestCare.getManagerAccount();
-    }
 
     @Override
     public List<ManagerDto.SeniorInfo> getSeniorInfoByIds(List<Long> seniorIds) {

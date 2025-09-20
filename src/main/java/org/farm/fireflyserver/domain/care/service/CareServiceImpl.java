@@ -18,6 +18,8 @@ import org.farm.fireflyserver.domain.care.persistence.entity.CareResult;
 import org.farm.fireflyserver.domain.care.web.dto.AbsentCareDetailsDto;
 import org.farm.fireflyserver.domain.care.web.dto.CareDto;
 import org.farm.fireflyserver.domain.care.web.dto.NormalCareDetailsDto;
+import org.farm.fireflyserver.domain.manager.persistence.ManagerRepository;
+import org.farm.fireflyserver.domain.manager.persistence.entity.Manager;
 import org.farm.fireflyserver.domain.manager.web.dto.ManagerDto;
 import org.farm.fireflyserver.domain.senior.persistence.entity.Senior;
 import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorRepository;
@@ -34,6 +36,7 @@ import java.util.stream.Collectors;
 public class CareServiceImpl implements CareService {
     private final CareRepository careRepository;
     private final AccountRepository accountRepository;
+    private final ManagerRepository managerRepository;
     private final SeniorRepository seniorRepository;
     private final CareResultRepository careResultRepository;
     private final AbsentResultRepository absentResultRepository;
@@ -41,8 +44,8 @@ public class CareServiceImpl implements CareService {
 
     @Override
     public void addCare(CareDto.Register dto) {
-        Account manager = accountRepository.findById(dto.getManager_id())
-                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
+        Manager manager = managerRepository.findById(dto.getManager_id())
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MANAGER_NOT_FOUND));
         Senior senior = seniorRepository.findById(dto.getSenior_id())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SENIOR_NOT_FOUND));
 
@@ -57,7 +60,7 @@ public class CareServiceImpl implements CareService {
 
         Care care = Care.builder()
                 .content(dto.getContent())
-                .managerAccount(manager)
+                .manager(manager)
                 .result(result)
                 .senior(senior)
                 .type(type)

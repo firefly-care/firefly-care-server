@@ -35,7 +35,7 @@ public class CareDto {
 
     public record Response (
             LocalDateTime date,
-            String managerId,
+            Long managerId,
             String managerName,
             Type type,
             String content,
@@ -46,8 +46,8 @@ public class CareDto {
         public static Response from(Care care) {
             return new Response(
                     care.getDate(),
-                    care.getManagerAccount().getId(),
-                    care.getManagerAccount().getName(),
+                    care.getManager().getManagerId(),
+                    care.getManager().getName(),
                     care.getType(),
                     care.getContent(),
                     String.valueOf(care.getSenior().getSeniorId()),
