@@ -2,9 +2,9 @@ package org.farm.fireflyserver.domain.led.service.batch;
 
 import lombok.AllArgsConstructor;
 import org.farm.fireflyserver.domain.led.persistence.repository.LedHistoryRepository;
+import org.farm.fireflyserver.domain.led.persistence.repository.LedStateRepository;
 import org.farm.fireflyserver.domain.led.web.dto.response.LedDataLogDto;
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobScope;
@@ -35,8 +35,6 @@ import java.util.UUID;
 public class LedBatchConfig {
 
     private final PlatformTransactionManager transactionManager;
-    private final LedHistoryRepository ledHistoryRepository;
-    private final JobLauncher jobLauncher;
 
     // 공통 시간 Map
     @Bean
@@ -70,8 +68,13 @@ public class LedBatchConfig {
 
     @Bean
     @JobScope
-    public LedJobListener ledJobListener(Map<String, LedDataLogDto> latestMap, Map<String, LocalDateTime> windowTimes) {
-        return new LedJobListener(ledHistoryRepository, latestMap, windowTimes);
+    public LedJobListener ledJobListener(
+            LedHistoryRepository ledHistoryRepository,
+            LedStateRepository ledStateRepository,
+            Map<String, LedDataLogDto> latestMap,
+            Map<String, LocalDateTime> windowTimes
+    ) {
+        return new LedJobListener(ledHistoryRepository, ledStateRepository, latestMap, windowTimes);
     }
 
 
@@ -90,10 +93,12 @@ public class LedBatchConfig {
     @StepScope
     public LedItemWriter ledItemWriter(
             LedHistoryRepository ledHistoryRepository,
+            LedStateRepository ledStateRepository,
             Map<String, LocalDateTime> windowTimes
     ) {
-        return new LedItemWriter(ledHistoryRepository, windowTimes);
+        return new LedItemWriter(ledHistoryRepository, ledStateRepository, windowTimes);
     }
+
 
     // LED 데이터 히스토리 저장 배치 Job
     // ledDataSource : 실제 LED 센서 로그 받아오는 DB
@@ -107,11 +112,15 @@ public class LedBatchConfig {
                 .build();
     }
 
-    // LED 데이터 히스토리 저장 배치 Step
-    // 1. reader에서 10분 이내 LED 센서 로그를 읽기
-    // 2. processor에서 각 LED별로 가장 최신 로그만 남기기
-    // 3. writer에서 최신 ON 이벤트를 LED 히스토리에 저장 & 업데이트
-    // 4. jobListener에서 ON 상태였는데 processor(최신 10분 ON 로그)에 없으면 OFF 이벤트 추가
+    /*
+      LED 데이터 히스토리 저장 배치 Step
+      1) Reader: 실행 시각 기준 최근 10분 이내의 LED 센서 로그 조회
+      2) Processor: 센서별 최신 로그 1건만 남김
+      3) Writer: LedState(현재 상태)에 따라
+                    - OFF → ON : LedHistory에 ON 이벤트 추가 + LedState를 ON으로 전환
+                    - ON 유지 시: LedState의 updatedAt만 갱신 (히스토리 추가 없음)
+      4) Listener : 직전 상태가 ON인데 이번 윈도우에 로그가 없으면 LedHistory에 OFF 이벤트 추가 + LedState를 OFF로 전환
+     */
     @Bean
     public Step ledHistoryStep(JobRepository jobRepository,
                                LedItemProcessor ledItemProcessor,
@@ -124,7 +133,6 @@ public class LedBatchConfig {
                 .writer(ledItemWriter)
                 .build();
     }
-
 
     /*
     //바로 실행용

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @Table(name = "led_history")
-public class LedHistory extends BaseCreatedTimeEntity {
+public class LedHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +32,4 @@ public class LedHistory extends BaseCreatedTimeEntity {
 
     @Comment("LED ON/OFF 시각")
     private LocalDateTime eventTime;
-
-    public void updateEventTime(LocalDateTime eventTime) {
-        this.eventTime = eventTime;
-    }
 }

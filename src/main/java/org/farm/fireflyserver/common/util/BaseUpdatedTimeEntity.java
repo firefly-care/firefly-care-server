@@ -14,4 +14,7 @@ public abstract class BaseUpdatedTimeEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    public void updateTime(LocalDateTime updatedTime) {
+        this.updatedAt = updatedTime;
+    }
 }

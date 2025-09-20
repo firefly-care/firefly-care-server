@@ -31,12 +31,13 @@ public class SecurityConfig {
             "v3/api-docs/**",
 
             /* api */
+            //TODO : 보안상 토큰 필요하면 화이트 리스트에서 제거
             "/token/**",
             "/senior/**",
             "/led/save",
             "/account/login",
-            "/monitoring/**"
-
+            "/monitoring/**",
+            "/manager/**"
             };
 
     @Bean

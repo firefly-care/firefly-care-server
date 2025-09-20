@@ -16,20 +16,14 @@ public interface LedHistoryRepository extends JpaRepository<LedHistory, Long> {
     boolean existsByLedMtchnSnAndSensorGbnAndOnOffAndEventTime(
             String ledMtchnSn, SensorGbn sensorGbn, OnOff onOff, LocalDateTime eventTime);
 
-    // 특정 LED센서 최신 데이터 조회
-    LedHistory findTopByLedMtchnSnAndSensorGbnOrderByEventTimeDescLedHistoryIdDesc(String ledMtchnSn, SensorGbn sensorGbn);
-
     // 모든 LED센서 최신 데이터 조회
-    //JPQL에서 일부 기능 사용 불가하여 NativeQuery 사용
-    @Query(value = """
-    SELECT l.*
-    FROM led_history l
-    JOIN (
-        SELECT t.led_mtchn_sn, t.sensor_gbn, MAX(t.led_history_id) AS max_id
-        FROM led_history t
-        GROUP BY t.led_mtchn_sn, t.sensor_gbn
-    ) latest
-      ON l.led_history_id = latest.max_id
-    """, nativeQuery = true)
+    @Query("""
+    SELECT l FROM LedHistory l
+    WHERE l.ledHistoryId IN (
+        SELECT MAX(l2.ledHistoryId)
+        FROM LedHistory l2
+        GROUP BY l2.ledMtchnSn, l2.sensorGbn
+    )
+    """)
     List<LedHistory> findLatestHistories();
 }

@@ -6,7 +6,9 @@ import org.farm.fireflyserver.common.response.ErrorCode;
 import org.farm.fireflyserver.domain.care.persistence.entity.Type;
 import org.farm.fireflyserver.domain.care.service.CareService;
 import org.farm.fireflyserver.domain.manager.persistence.ManagerRepository;
+import org.farm.fireflyserver.domain.manager.persistence.entity.Manager;
 import org.farm.fireflyserver.domain.manager.web.dto.ManagerDto;
+import org.farm.fireflyserver.domain.manager.web.dto.ManagerNameDto;
 import org.farm.fireflyserver.domain.senior.service.SeniorService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,5 +53,11 @@ public class ManagerServiceImpl implements ManagerService {
         }
 
         return careService.getCareSeniorInfoByManagerAndCareType(managerId, careType);
+    }
+
+    @Override
+    public List<ManagerNameDto> getManagerNameList () {
+        List<Manager> managerList = managerRepository.findAllByOrderByNameAsc();
+        return managerList.stream().map(ManagerNameDto::from).toList();
     }
 }
