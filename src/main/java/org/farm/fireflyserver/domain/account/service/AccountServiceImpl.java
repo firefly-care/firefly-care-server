@@ -37,7 +37,7 @@ public class AccountServiceImpl implements AccountService {
             throw new EntityNotFoundException(PASSWORD_NOT_FOUND);
         }
 
-        return new TokenDto(getAccessToken(account), account.getName());
+        return new TokenDto(getAccessToken(account), account.getAccountId(), account.getName());
 
     }
 
