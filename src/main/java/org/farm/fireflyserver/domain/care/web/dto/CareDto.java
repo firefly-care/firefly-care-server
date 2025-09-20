@@ -74,7 +74,7 @@ public class CareDto {
             Long emergCnt,
             List<CareTuple> cares
     ) {
-        public static record CareTuple (
+        public record CareTuple (
                 LocalDateTime careDate,
                 Type careType,
                 Result result
