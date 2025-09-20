@@ -34,10 +34,6 @@ public class LedState extends BaseUpdatedTimeEntity {
     @Enumerated(EnumType.STRING)
     private OnOff onOff;
 
-    @ManyToOne
-    @JoinColumn(name = "senior_id", nullable = false)
-    @Comment("대상자 식별 정보")
-    private Senior senior;
 
     public void updateState(OnOff onOff) {
         this.onOff = onOff;

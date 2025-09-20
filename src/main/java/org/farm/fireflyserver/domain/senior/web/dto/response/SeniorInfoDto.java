@@ -13,20 +13,23 @@ public record SeniorInfoDto(
         String address,
         String managerName,
         String managerPhoneNum,
-        SeniorStateDto seniorState,
+        Integer lastActTime,
+        String deviceStatus,
+
         List<LedStateDto> ledStates
 ) {
-    public static  SeniorInfoDto of(Senior senior, String managerName, String managerPhoneNum, SeniorStateDto seniorState,List<LedStateDto>  ledStates) {
+    public static  SeniorInfoDto of(Senior senior, Integer lastActTime, String deviceStatus,List<LedStateDto> ledStates) {
+
         return new SeniorInfoDto(
                 senior.getName(),
                 senior.getBirthday() ,
                 senior.getPhoneNum(),
                 senior.getAddress(),
-                managerName,
-                managerPhoneNum,
-                seniorState,
+                senior.getManager().getName(),
+                senior.getManager().getPhoneNum(),
+                lastActTime,
+                deviceStatus,
                 ledStates
         );
-
     }
 }

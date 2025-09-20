@@ -93,9 +93,6 @@ public class Senior {
     @JoinColumn(name = "manager_id", nullable = false)
     private Manager manager;
 
-    @OneToMany(mappedBy = "senior")
-    private List<LedState> ledStates = new ArrayList<>();
-
     public void deactivate() {
         this.isActive = false;
     }

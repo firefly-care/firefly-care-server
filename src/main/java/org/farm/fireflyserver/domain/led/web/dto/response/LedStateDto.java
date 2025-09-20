@@ -11,7 +11,7 @@ public record LedStateDto(
     public static LedStateDto of(LedState ledState) {
         return new LedStateDto(
                 ledState.getSensorGbn().getDesc(),
-                ledState.getOnOff() == OnOff.ON
+                ledState.getOnOff()== OnOff.ON
         );
     }
 }

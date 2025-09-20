@@ -94,7 +94,6 @@ public class LedItemWriter implements ItemWriter<Map<String, LedDataLogDto>> {
                     .ledMtchnSn(ledMtchnSn)
                     .sensorGbn(sensorGbn)
                     .onOff(OnOff.ON)
-                    .senior(Senior.builder().seniorId(1L).build()) // TODO: 임시 매핑. 실제 senior 매핑으로 수정
                     .build();
             ledStateRepository.save(state);
 
