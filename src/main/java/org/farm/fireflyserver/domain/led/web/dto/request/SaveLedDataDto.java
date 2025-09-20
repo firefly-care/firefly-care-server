@@ -13,7 +13,6 @@ public record SaveLedDataDto(
         return LedData.builder()
                 .trgSn(dto.trgSn())
                 .snsrSn(dto.snsrSn())
-                .ledState(null)
                 .build();
     }
 }

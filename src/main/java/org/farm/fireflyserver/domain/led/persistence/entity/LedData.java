@@ -20,7 +20,9 @@ public class LedData {
     @Column(name = "SNSR_SN")
     private String snsrSn;
 
+    /*
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "led_state_id")
     private LedState ledState;
+    */
 }
