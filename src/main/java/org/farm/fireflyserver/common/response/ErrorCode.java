@@ -38,6 +38,7 @@ public enum ErrorCode {
     SENIOR_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 시니어를 찾을 수 없습니다."),
     ACCOUNT_ID_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 계정 아이디를 찾을 수 없습니다."),
     PASSWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 비밀번호를 찾을 수 없습니다."),
+    MANAGER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 매니저를 찾을 수 없습니다."),
 
     /**
      * 405 Method Not Allowed

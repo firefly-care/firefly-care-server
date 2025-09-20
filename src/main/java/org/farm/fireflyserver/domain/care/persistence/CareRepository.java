@@ -25,10 +25,9 @@ public interface CareRepository extends JpaRepository<Care, Long>, CareRepositor
             "s.name LIKE %:#{#req.searchTerm}% OR " +
             "CAST(s.birthday AS string) LIKE %:#{#req.searchTerm}% OR " +
             "s.phoneNum LIKE %:#{#req.searchTerm}% OR " +
-            "s.homePhoneNum LIKE %:#{#req.searchTerm}% OR " +
+            "s.subPhoneNum LIKE %:#{#req.searchTerm}% OR " +
             "s.zipCode LIKE %:#{#req.searchTerm}% OR " +
             "s.address LIKE %:#{#req.searchTerm}% OR " +
-            "s.town LIKE %:#{#req.searchTerm}% OR " +
             //Account 정보
             "m.name LIKE %:#{#req.searchTerm}% OR " +
             "m.phoneNum LIKE %:#{#req.searchTerm}%)")

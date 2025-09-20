@@ -6,16 +6,18 @@ import org.farm.fireflyserver.common.response.ErrorCode;
 import org.farm.fireflyserver.domain.account.persistence.entity.Account;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 import org.farm.fireflyserver.domain.led.web.dto.response.LedStateDto;
+import org.farm.fireflyserver.domain.manager.persistence.ManagerRepository;
+import org.farm.fireflyserver.domain.manager.persistence.entity.Manager;
 import org.farm.fireflyserver.domain.manager.web.dto.ManagerDto;
+import org.farm.fireflyserver.domain.senior.persistence.entity.Senior;
 import org.farm.fireflyserver.domain.senior.persistence.entity.SeniorStatus;
+import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorRepository;
+import org.farm.fireflyserver.domain.senior.web.dto.request.RegisterSeniorDto;
 import org.farm.fireflyserver.domain.senior.web.dto.request.RequestSeniorDto;
 import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorDetailDto;
 import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorInfoDto;
 import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorStateDto;
 import org.farm.fireflyserver.domain.senior.web.mapper.SeniorMapper;
-import org.farm.fireflyserver.domain.senior.web.dto.request.RegisterSeniorDto;
-import org.farm.fireflyserver.domain.senior.persistence.entity.Senior;
-import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,17 +27,27 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.farm.fireflyserver.common.response.ErrorCode.MANAGER_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class SeniorServiceImpl implements SeniorService {
 
     private final SeniorRepository seniorRepository;
+    private final ManagerRepository managerRepository;
     private final SeniorMapper seniorMapper;
 
+    // 대상자 등록
     @Transactional
     public void registerSenior(RegisterSeniorDto dto) {
         Senior senior = seniorMapper.toEntity(dto);
+
+        String managerName = dto.managerName();
+        Manager manager = managerRepository.findByName(managerName)
+                .orElseThrow(() -> new EntityNotFoundException(MANAGER_NOT_FOUND));
+
+        senior.assignManager(manager);
         seniorRepository.save(senior);
     }
 

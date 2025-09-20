@@ -11,16 +11,16 @@ public record RegisterSeniorDto(
         LocalDate birthday,
         BenefitType benefitType,   //보장 유형
         String managerName,
-        String address,
-        String town,
-        String phoneNum,
-        String homePhoneNum,
-        String zipCode,
+        LocalDate serviceStartDate,
         String guardianName,
         String guardianPhoneNum,
-        Boolean isHighRisk,
-
+        String zipCode,
+        String address,
+        String phoneNum,
+        String subPhoneNum,
+        String ledMtchnSn,
         String memo
 ) {
+
 
 }

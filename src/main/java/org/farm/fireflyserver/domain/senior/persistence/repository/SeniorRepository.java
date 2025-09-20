@@ -12,9 +12,8 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
 
     List<Senior> findAllByIsActiveTrue();
     int countByIsActiveTrue();
-    List<Senior> findByIsActiveTrueAndIsLedUseTrue();
     int countByIsActiveTrueAndIsLedUseTrue();
-    int countByIsActiveTrueAndIsAmiUseTrue();
+
 
     @Query("""
        SELECT DISTINCT s FROM Senior s
@@ -22,30 +21,21 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
        LEFT JOIN c.managerAccount m
        LEFT JOIN s.seniorStatus ss
        WHERE (:isActive IS NULL OR s.isActive = :isActive)
-       AND (
+         AND (
            :keywordType IS NULL OR :keyword IS NULL OR
-           (:keywordType = 'name' AND LOWER(s.name) LIKE %:keyword%) OR
-           (:keywordType = 'phone' AND LOWER(s.phoneNum) LIKE %:keyword%) OR
-           (:keywordType = 'town' AND LOWER(s.town) LIKE %:keyword%) OR
-           (:keywordType = 'address' AND LOWER(s.address) LIKE %:keyword%) OR
-           (:keywordType = 'managerName' AND LOWER(m.name) LIKE %:keyword%) OR
-           (:keywordType = 'managerPhone' AND LOWER(m.phoneNum) LIKE %:keyword%) OR
-           (:keywordType = 'state' AND LOWER(ss.state) LIKE %:keyword%)
-   )
-""")
+           (:keywordType = 'name'         AND LOWER(s.name)      LIKE %:keyword%) OR
+           (:keywordType = 'phone'        AND LOWER(s.phoneNum)  LIKE %:keyword%) OR
+           (:keywordType = 'address'      AND LOWER(s.address)   LIKE %:keyword%) OR
+           (:keywordType = 'managerName'  AND LOWER(m.name)      LIKE %:keyword%) OR
+           (:keywordType = 'managerPhone' AND LOWER(m.phoneNum)  LIKE %:keyword%) OR
+           (:keywordType = 'state'        AND LOWER(ss.state)    LIKE %:keyword%)
+         )
+       """)
     List<Senior> searchSeniors(
             @Param("isActive") Boolean isActive,
             @Param("keywordType") String keywordType,
             @Param("keyword") String keyword
     );
-
-    @Query("""
-    SELECT s.town, COUNT(s)
-    FROM Senior s
-    WHERE s.isActive = true
-    GROUP BY s.town
-""")
-    List<Object[]> countByTown();
 
     @Query("""
     SELECT s.seniorStatus.dangerLevel, COUNT(s)
@@ -54,36 +44,6 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
     GROUP BY s.seniorStatus.dangerLevel
 """)
     List<Object[]> countByDangerLevel();
-
-    // 위기 등급 기준
-    @Query("""
-        SELECT s.town, ss.dangerLevel, COUNT(s)
-        FROM Senior s
-        JOIN s.seniorStatus ss
-        WHERE s.isActive = true
-        GROUP BY s.town, ss.dangerLevel
-    """)
-    List<Object[]> countByTownAndDangerLevel();
-
-    // 마지막 활동 기준
-    @Query("""
-        SELECT s.town, ss.lastActTime, COUNT(s)
-        FROM Senior s
-        JOIN s.seniorStatus ss
-        WHERE s.isActive = true
-        GROUP BY s.town, ss.lastActTime
-    """)
-    List<Object[]> countByTownAndLastActTime();
-
-    // 이상 징후 기준
-    @Query("""
-        SELECT s.town, ss.state, COUNT(s)
-        FROM Senior s
-        JOIN s.seniorStatus ss
-        WHERE s.isActive = true
-        GROUP BY s.town, ss.state
-    """)
-    List<Object[]> countByTownAndState();
 
     @Query("SELECT s FROM Senior s " +
            "LEFT JOIN FETCH s.seniorStatus " +
