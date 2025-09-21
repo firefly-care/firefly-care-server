@@ -13,7 +13,13 @@ public record CalendarCareStateDto(
         String managerName,
         LocalDateTime careDateRaw,
         String careDate,
-        String careContent
+
+        //돌봄 내용
+        String eatingState,
+        String cognitionState,
+        String communicationState,
+        String healthState
+
 ) {
 
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy.MM.dd.(E)", Locale.KOREAN);
@@ -25,7 +31,10 @@ public record CalendarCareStateDto(
                 care.getManager().getName(),
                 care.getDate(),
                 care.getDate().format(DATE_FMT),
-                care.getContent()
+                care.getCareResult() != null ? care.getCareResult().getEating().getDesc() : null,
+                care.getCareResult() != null ? care.getCareResult().getCognition().getDesc() : null,
+                care.getCareResult() != null ? care.getCareResult().getCommunication().getDesc() : null,
+                care.getCareResult() != null ? care.getCareResult().getHealth().getDesc() : null
         );
     }
 }
