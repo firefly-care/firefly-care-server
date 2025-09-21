@@ -24,11 +24,6 @@ public class Care extends BaseCreatedTimeEntity {
     private Long careId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_account_id")
-    @Comment("돌봄 담당자 계정")
-    private Account managerAccount;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")
     @Comment("돌봄 담당자")
     private Manager manager;

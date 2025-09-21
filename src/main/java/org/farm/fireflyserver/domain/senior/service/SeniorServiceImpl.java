@@ -67,8 +67,8 @@ public class SeniorServiceImpl implements SeniorService {
         }
 
         return new String[]{
-                latestCare.getManagerAccount().getName(),
-                latestCare.getManagerAccount().getPhoneNum()
+                latestCare.getManager().getName(),
+                latestCare.getManager().getPhoneNum()
         };
     }
 
