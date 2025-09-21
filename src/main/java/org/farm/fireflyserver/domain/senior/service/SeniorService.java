@@ -19,4 +19,6 @@ public interface SeniorService {
     void deactivateSenior(RequestSeniorDto.Deactivate dto);
 
     List<ManagerDto.SeniorInfo> getSeniorInfoByIds(List<Long> seniorIds);
+
+    void updateSeniorStatus(String ledMtchnSn, Double sleepScr, Double memoryScr, Double lowEngScr, Double dangerRt);
 }

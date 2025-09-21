@@ -1,7 +1,6 @@
 package org.farm.fireflyserver.domain.senior.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.hibernate.annotations.Comment;
 
@@ -31,9 +30,6 @@ public class SeniorStatus {
     @Comment("무기력증 점수")
     private Double lowEngScr;
 
-    @Comment("미활동 점수")
-    private Double inactScr;
-
     @Comment("마지막 활동 시간")
     private Integer lastActTime;
 
@@ -44,4 +40,11 @@ public class SeniorStatus {
     @Enumerated(EnumType.STRING)
     @Comment("위험 등급")
     private DangerLevel dangerLevel;
+
+    public void updateScores(Double sleepScr, Double memoryScr, Double lowEngScr, Double dangerRt){
+        this.sleepScr = sleepScr;
+        this.memoryScr = memoryScr;
+        this.lowEngScr = lowEngScr;
+        this.dangerRt = dangerRt;
+    }
 }

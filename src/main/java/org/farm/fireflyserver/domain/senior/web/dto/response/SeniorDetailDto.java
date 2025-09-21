@@ -18,7 +18,7 @@ public class SeniorDetailDto {
                 // Senior fields
                 senior.getSeniorId(), senior.getName(), senior.getGender(), senior.getBenefitType(), senior.getBirthday(), senior.getPhoneNum(), senior.getSubPhoneNum(), senior.getZipCode(), senior.getAddress(), senior.getGuardianName(), senior.getGuardianPhoneNum(), senior.getMemo(), senior.isActive(), senior.isLedUse(),
                 // SeniorStatus fields
-                seniorStatus.getDangerRt(), seniorStatus.getSleepScr(), seniorStatus.getMemoryScr(), seniorStatus.getLowEngScr(), seniorStatus.getInactScr(), seniorStatus.getLastActTime(), seniorStatus.getState(), seniorStatus.getDangerLevel(),
+                seniorStatus.getDangerRt(), seniorStatus.getSleepScr(), seniorStatus.getMemoryScr(), seniorStatus.getLowEngScr(), seniorStatus.getLastActTime(), seniorStatus.getState(), seniorStatus.getDangerLevel(),
 
                 manager.getName(), manager.getPhoneNum(), manager.getManagerId());
         return SeniorDetailDto.builder().response(response).build();
@@ -33,7 +33,7 @@ public class SeniorDetailDto {
             boolean isLedUse,
 
             // SeniorStatus fields
-            Double dangerRt, Double sleepScr, Double memoryScr, Double lowEngScr, Double inactScr, Integer lastActTime,
+            Double dangerRt, Double sleepScr, Double memoryScr, Double lowEngScr, Integer lastActTime,
             String state, DangerLevel dangerLevel,
 
             // Account fields

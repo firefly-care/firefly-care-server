@@ -65,6 +65,9 @@ public class CareServiceImpl implements CareService {
 
         careRepository.save(care);
 
+        //돌봄이 등록 된 후 manager 테이블을 업데이트합니다.
+        manager.addCare();
+
         if (dto.getDetails() instanceof NormalCareDetailsDto details) {
             CareResult careResult = careMapper.toCareResult(details, care);
             careResultRepository.save(careResult);

@@ -77,11 +77,11 @@ public class Senior {
     @Comment("LED 사용 여부")
     private boolean isLedUse;
 
-    @Comment("LED 식별 번호")
-    private String ledMtchnSn;
-
     @Comment("서비스 시작일")
     private LocalDate serviceStartDate;
+
+    @Comment("대상자 가구 LED 장치 번호")
+    private String ledMtchnSn;
 
     @OneToMany(mappedBy = "senior")
     private List<Care> careList = new ArrayList<>();
