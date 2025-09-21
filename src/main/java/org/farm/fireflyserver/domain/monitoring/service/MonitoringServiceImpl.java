@@ -2,8 +2,6 @@ package org.farm.fireflyserver.domain.monitoring.service;
 
 import lombok.RequiredArgsConstructor;
 import org.farm.fireflyserver.domain.account.persistence.AccountRepository;
-import org.farm.fireflyserver.domain.account.persistence.entity.Account;
-import org.farm.fireflyserver.domain.account.persistence.entity.Authority;
 import org.farm.fireflyserver.domain.care.persistence.CareRepository;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 import org.farm.fireflyserver.domain.manager.persistence.ManagerRepository;
@@ -26,16 +24,26 @@ public class MonitoringServiceImpl implements MonitoringService {
     private final SeniorRepository seniorRepository;
     private final CareRepository careRepository;
     private final ManagerRepository managerRepository;
-    private final AccountRepository accountRepository;
 
     // 공통 날짜 포맷터
-    private static final DateTimeFormatter YM_FMT  = DateTimeFormatter.ofPattern("yyyy.MM");
+    private static final DateTimeFormatter YM_FMT = DateTimeFormatter.ofPattern("yyyy.MM");
     private static final DateTimeFormatter YMD_FMT = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
-    private static LocalDateTime startOfMonth(YearMonth ym) {return ym.atDay(1).atStartOfDay();}
-    private static LocalDateTime endOfMonth(YearMonth ym) {return ym.atEndOfMonth().atTime(23, 59, 59);}
-    private static LocalDateTime startOfDay(LocalDate d) {return d.atStartOfDay();}
-    private static LocalDateTime endOfDay(LocalDate d) {return d.atTime(23, 59, 59);}
+    private static LocalDateTime startOfMonth(YearMonth ym) {
+        return ym.atDay(1).atStartOfDay();
+    }
+
+    private static LocalDateTime endOfMonth(YearMonth ym) {
+        return ym.atEndOfMonth().atTime(23, 59, 59);
+    }
+
+    private static LocalDateTime startOfDay(LocalDate d) {
+        return d.atStartOfDay();
+    }
+
+    private static LocalDateTime endOfDay(LocalDate d) {
+        return d.atTime(23, 59, 59);
+    }
 
 
     //메인홈 조회
@@ -52,7 +60,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         // 캘린더 돌봄 내역
         CalendarCareStateWithDateDto calendarCareState = getCalendarCareState(calendarDate);
 
-        return MainHomeDto.of(monthlyCareState, seniorStateCount,managerStateDto,calendarCareCount,calendarCareState);
+        return MainHomeDto.of(monthlyCareState, seniorStateCount, managerStateDto, calendarCareCount, calendarCareState);
 
     }
 
@@ -62,7 +70,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         List<Care> cares = careRepository.findAllByDateBetween(startOfMonth(ym), endOfMonth(ym));
 
         int totalSeniorCount = seniorRepository.countByIsActiveTrue();
-        int totalManagerCount = accountRepository.countByAuthority(Authority.MNG);
+        int totalManagerCount = (int) managerRepository.count();
 
         int call = 0, visit = 0, emergency = 0;
         for (Care c : cares) {
@@ -107,7 +115,7 @@ public class MonitoringServiceImpl implements MonitoringService {
     private LocalTime getRecentUpdateTime() {
         LocalTime now = LocalTime.now();
         //업데이트 단위(5분) 기준 가장 가까운 시간
-        int minute = now.getMinute()/5*5;
+        int minute = now.getMinute() / 5 * 5;
         return LocalTime.of(now.getHour(), minute);
     }
 
@@ -137,18 +145,15 @@ public class MonitoringServiceImpl implements MonitoringService {
         YearMonth ym = YearMonth.parse(calendarYearMonth, YM_FMT);
         List<Object[]> rows = careRepository.countByDateBetweenGroupByDate(startOfMonth(ym), endOfMonth(ym));
 
-        List<CalendarCareCountDto> items = rows.stream()
-                .map(row -> {
-                    Object d0 = row[0];
-                    LocalDate day = (d0 instanceof LocalDate ld) ? ld : ((java.sql.Date) d0).toLocalDate();
-                    int count = ((Number) row[1]).intValue();
-                    return CalendarCareCountDto.of(day.getDayOfMonth(), count);
-                })
-                .toList();
+        List<CalendarCareCountDto> items = rows.stream().map(row -> {
+            Object d0 = row[0];
+            LocalDate day = (d0 instanceof LocalDate ld) ? ld : ((java.sql.Date) d0).toLocalDate();
+            int count = ((Number) row[1]).intValue();
+            return CalendarCareCountDto.of(day.getDayOfMonth(), count);
+        }).toList();
 
         return CalendarCareCountWithMonthDto.of(calendarYearMonth, items);
     }
-
 
 
     // 캘린더 돌봄 내역
@@ -156,9 +161,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         LocalDate target = LocalDate.parse(calendarDate, YMD_FMT);
         List<Care> cares = careRepository.findAllByDateBetweenOrderByDateDesc(startOfDay(target), endOfDay(target));
 
-        List<CalendarCareStateDto> items = cares.stream()
-                .map(CalendarCareStateDto::from)
-                .toList();
+        List<CalendarCareStateDto> items = cares.stream().map(CalendarCareStateDto::from).toList();
 
         return CalendarCareStateWithDateDto.of(calendarDate, items);
     }

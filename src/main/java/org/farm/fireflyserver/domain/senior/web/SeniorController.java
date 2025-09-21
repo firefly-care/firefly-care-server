@@ -46,7 +46,7 @@ public class SeniorController {
     @GetMapping("/search")
     public BaseResponse<?> searchSeniors(
             @Parameter(description = "서비스 진행 여부") @RequestParam(required = false) Boolean isActive,
-            @Parameter(description = "검색 타입 : name(이름), phone(연락처), town(읍면동), address(주소), managerName(담당자), magagerPhone(담당자 연락처), state(이상징후)")
+            @Parameter(description = "검색 타입 : name(이름), phone(연락처), address(주소), managerName(담당자), magagerPhone(담당자 연락처)")
             @RequestParam(required = false) String keywordType,
             @Parameter(description = "검색 키워드") @RequestParam(required = false) String keyword
            ) {
