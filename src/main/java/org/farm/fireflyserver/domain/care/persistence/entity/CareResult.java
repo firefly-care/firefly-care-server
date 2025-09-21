@@ -6,7 +6,8 @@ import org.hibernate.annotations.Comment;
 
 @Table(name = "care_result")
 @Entity
-@Getter(AccessLevel.PROTECTED) @Builder
+@Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CareResult {

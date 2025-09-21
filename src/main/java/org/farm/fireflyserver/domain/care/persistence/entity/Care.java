@@ -48,4 +48,7 @@ public class Care extends BaseCreatedTimeEntity {
     @Column(nullable = false)
     @Comment("돌봄 결과")
     private Result result;
+
+    @OneToOne(mappedBy = "care")
+    private CareResult careResult;
 }

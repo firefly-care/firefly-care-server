@@ -163,6 +163,7 @@ public class MonitoringServiceImpl implements MonitoringService {
 
         List<CalendarCareStateDto> items = cares.stream().map(CalendarCareStateDto::from).toList();
 
+
         return CalendarCareStateWithDateDto.of(calendarDate, items);
     }
 }

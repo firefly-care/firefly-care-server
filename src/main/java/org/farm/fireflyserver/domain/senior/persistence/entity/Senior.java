@@ -81,6 +81,7 @@ public class Senior {
     private LocalDate serviceStartDate;
 
     @Comment("대상자 가구 LED 장치 번호")
+    @Column(unique = true)
     private String ledMtchnSn;
 
     @OneToMany(mappedBy = "senior")
