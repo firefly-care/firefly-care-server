@@ -87,6 +87,9 @@ public class Senior extends BaseCreatedTimeEntity {
     @Comment("AMI 사용 여부")
     private boolean isAmiUse;
 
+    @Comment("대상자 가구 LED 장치 번호")
+    private String ledMtchnSn;
+
     @OneToMany(mappedBy = "senior")
     private List<Care> careList = new ArrayList<>();
 

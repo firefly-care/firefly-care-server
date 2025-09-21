@@ -91,4 +91,6 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
            "LEFT JOIN FETCH c.managerAccount " +
            "WHERE s.seniorId = :seniorId")
     Optional<Senior> findSeniorDetailById(@Param("seniorId") Long seniorId);
+
+    Optional<Senior> findByLedMtchnSn(String ledMtchnSn);
 }
