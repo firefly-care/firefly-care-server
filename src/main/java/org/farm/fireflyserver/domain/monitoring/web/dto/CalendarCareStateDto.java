@@ -22,7 +22,7 @@ public record CalendarCareStateDto(
                 care.getSenior().getName(),
                 care.getType().getDesc(),
                 care.getResult().getDesc(),
-                care.getManagerAccount().getName(),
+                care.getManager().getName(),
                 care.getDate(),
                 care.getDate().format(DATE_FMT),
                 care.getContent()

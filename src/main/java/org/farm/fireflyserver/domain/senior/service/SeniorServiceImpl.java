@@ -4,29 +4,30 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.farm.fireflyserver.common.exception.EntityNotFoundException;
 import org.farm.fireflyserver.common.response.ErrorCode;
-import org.farm.fireflyserver.domain.account.persistence.entity.Account;
-import org.farm.fireflyserver.domain.care.persistence.entity.Care;
+import org.farm.fireflyserver.domain.led.persistence.repository.LedStateRepository;
 import org.farm.fireflyserver.domain.led.web.dto.response.LedStateDto;
+import org.farm.fireflyserver.domain.manager.persistence.ManagerRepository;
+import org.farm.fireflyserver.domain.manager.persistence.entity.Manager;
 import org.farm.fireflyserver.domain.manager.web.dto.ManagerDto;
+import org.farm.fireflyserver.domain.senior.persistence.entity.Senior;
 import org.farm.fireflyserver.domain.senior.persistence.entity.SeniorStatus;
+import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorRepository;
+import org.farm.fireflyserver.domain.senior.web.dto.request.RegisterSeniorDto;
 import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorStatusRepository;
 import org.farm.fireflyserver.domain.senior.web.dto.request.RequestSeniorDto;
 import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorDetailDto;
 import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorInfoDto;
-import org.farm.fireflyserver.domain.senior.web.dto.response.SeniorStateDto;
 import org.farm.fireflyserver.domain.senior.web.mapper.SeniorMapper;
-import org.farm.fireflyserver.domain.senior.web.dto.request.RegisterSeniorDto;
-import org.farm.fireflyserver.domain.senior.persistence.entity.Senior;
-import org.farm.fireflyserver.domain.senior.persistence.repository.SeniorRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.farm.fireflyserver.common.response.ErrorCode.MANAGER_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -35,12 +36,21 @@ import java.util.stream.Collectors;
 public class SeniorServiceImpl implements SeniorService {
 
     private final SeniorRepository seniorRepository;
+    private final ManagerRepository managerRepository;
+    private final LedStateRepository ledStateRepository;
     private final SeniorMapper seniorMapper;
     private final SeniorStatusRepository seniorStatusRepository;
 
+    // 대상자 등록
     @Transactional
     public void registerSenior(RegisterSeniorDto dto) {
         Senior senior = seniorMapper.toEntity(dto);
+
+        String managerName = dto.managerName();
+        Manager manager = managerRepository.findByName(managerName)
+                .orElseThrow(() -> new EntityNotFoundException(MANAGER_NOT_FOUND));
+
+        senior.assignManager(manager);
         seniorRepository.save(senior);
     }
 
@@ -50,43 +60,8 @@ public class SeniorServiceImpl implements SeniorService {
         List<Senior> seniors = seniorRepository.findAll();
 
         return seniors.stream()
-                .map(senior -> {
-                    String[] manager = getManagerInfo(senior);
-                    SeniorStateDto seniorState = getSeniorState(senior);
-                    List<LedStateDto> ledState = getLedStates(senior);
-
-                    return SeniorInfoDto.of(senior, manager[0], manager[1], seniorState, ledState);
-                })
-                .collect(Collectors.toList());
-    }
-
-    // 대상자 담당자 정보
-    private String[] getManagerInfo(Senior senior) {
-        // 가장 최근 돌봄 이력
-        Care latestCare = senior.getCareList().stream()
-                .max(Comparator.comparing(Care::getDate))
-                .orElse(null);
-
-        if (latestCare == null) {
-            return new String[]{null, null};
-        }
-
-        return new String[]{
-                latestCare.getManagerAccount().getName(),
-                latestCare.getManagerAccount().getPhoneNum()
-        };
-    }
-
-    private SeniorStateDto getSeniorState(Senior senior) {
-        return senior.getSeniorStatus() != null
-                ? SeniorStateDto.from(senior.getSeniorStatus())
-                : null;
-    }
-
-    private List<LedStateDto> getLedStates(Senior senior) {
-        return senior.getLedStates().stream()
-                .map(LedStateDto::of)
-                .collect(Collectors.toList());
+                .map(this::mapToSeniorInfoDto)
+                .toList();
     }
 
     // 대상자 검색
@@ -95,30 +70,49 @@ public class SeniorServiceImpl implements SeniorService {
         List<Senior> seniors = seniorRepository.searchSeniors(isActive, keywordType, keyword);
 
         return seniors.stream()
-                .map(s -> {
-                    String[] manager = getManagerInfo(s);
-                    SeniorStateDto seniorState = getSeniorState(s);
-                    return SeniorInfoDto.of(s, manager[0], manager[1], seniorState, getLedStates(s));
-                })
-                .collect(Collectors.toList());
+                .map(this::mapToSeniorInfoDto)
+                .toList();
     }
+
+    private SeniorInfoDto mapToSeniorInfoDto(Senior senior) {
+        Integer lastActTime = Optional.ofNullable(senior.getSeniorStatus())
+                .map(SeniorStatus::getLastActTime)
+                .orElse(null);
+        String deviceStatus = lastActTime != null ? checkLedStatus(lastActTime) : "정보 없음";
+
+        List<LedStateDto> ledStates = ledStateRepository.findByLedMtchnSn(senior.getLedMtchnSn())
+                .stream()
+                .map(LedStateDto::of)
+                .toList();
+        return SeniorInfoDto.of(senior, lastActTime, deviceStatus, ledStates);
+    }
+
+    private static String checkLedStatus(Integer lastActTime) {
+
+        if (lastActTime <= 24) {
+            return "정상 작동";
+        } else if (lastActTime <= 72) {
+            return "점검 요망";
+        } else {
+            return "점검 필요";
+        }
+
+    }
+
 
     @Override
     public SeniorDetailDto getSeniorDetail(Long seniorId) {
         Senior senior = seniorRepository.findSeniorDetailById(seniorId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ENTITY_NOT_FOUND));
 
-        Account managerAccount = getManagerAccount(senior);
-        if (managerAccount == null) {
-            managerAccount = new Account();
-        }
+        Manager manager = senior.getManager();
 
         SeniorStatus seniorStatus = senior.getSeniorStatus();
         if (seniorStatus == null) {
             seniorStatus = new SeniorStatus();
         }
 
-        return SeniorDetailDto.fromEntities(senior, seniorStatus, managerAccount);
+        return SeniorDetailDto.fromEntities(senior, seniorStatus, manager);
     }
 
     @Transactional
@@ -149,17 +143,6 @@ public class SeniorServiceImpl implements SeniorService {
         }
     }
 
-    private Account getManagerAccount(Senior senior) {
-        Care latestCare = senior.getCareList().stream()
-                .max(Comparator.comparing(Care::getDate))
-                .orElse(null);
-
-        if (latestCare == null) {
-            return null;
-        }
-
-        return latestCare.getManagerAccount();
-    }
 
     @Override
     public List<ManagerDto.SeniorInfo> getSeniorInfoByIds(List<Long> seniorIds) {

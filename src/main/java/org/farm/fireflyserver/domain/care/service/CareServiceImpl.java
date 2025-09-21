@@ -42,7 +42,7 @@ public class CareServiceImpl implements CareService {
     @Override
     public void addCare(CareDto.Register dto) {
         Manager manager = managerRepository.findById(dto.getManager_id())
-                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MANAGER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
         Senior senior = seniorRepository.findById(dto.getSenior_id())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SENIOR_NOT_FOUND));
 

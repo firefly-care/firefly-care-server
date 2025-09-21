@@ -37,7 +37,8 @@ public class SecurityConfig {
             "/led/save",
             "/account/login",
             "/monitoring/**",
-            "/manager/**"
+            "/manager/**",
+            "/s3/presigned-url"
             };
 
     @Bean

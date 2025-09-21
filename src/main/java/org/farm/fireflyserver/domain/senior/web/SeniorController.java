@@ -25,13 +25,12 @@ public class SeniorController {
     private final SeniorService seniorService;
 
     // 대상자 등록
-    @Operation(summary = "대상자 등록(구현 X)", description = "신규 대상자 등록")
+    @Operation(summary = "대상자 등록", description = "신규 대상자 등록")
     @PostMapping
     public BaseResponse<?> registerSenior(@RequestBody RegisterSeniorDto dto) {
         seniorService.registerSenior(dto);
         return BaseResponse.of(SuccessCode.CREATED, null);
     }
-
 
     // 대상자 목록 조회
     @Operation(summary = "대상자 관리 페이지 - 대상자 목록 조회", description = "전체 대상자 정보 조회")
@@ -47,7 +46,7 @@ public class SeniorController {
     @GetMapping("/search")
     public BaseResponse<?> searchSeniors(
             @Parameter(description = "서비스 진행 여부") @RequestParam(required = false) Boolean isActive,
-            @Parameter(description = "검색 타입 : name(이름), phone(연락처), town(읍면동), address(주소), managerName(담당자), magagerPhone(담당자 연락처), state(이상징후)")
+            @Parameter(description = "검색 타입 : name(이름), phone(연락처), address(주소), managerName(담당자), magagerPhone(담당자 연락처)")
             @RequestParam(required = false) String keywordType,
             @Parameter(description = "검색 키워드") @RequestParam(required = false) String keyword
            ) {

@@ -23,12 +23,6 @@ public class Care extends BaseCreatedTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long careId;
 
-    // TODO : 연결된 부분 정리하고 이후 연결 끊기
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_account_id")
-    @Comment("돌봄 담당자 계정")
-    private Account managerAccount;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")
     @Comment("돌봄 담당자")

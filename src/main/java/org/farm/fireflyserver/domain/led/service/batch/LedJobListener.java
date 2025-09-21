@@ -67,7 +67,6 @@ public class LedJobListener extends JobExecutionListenerSupport {
                                     .ledMtchnSn(latest.getLedMtchnSn())
                                     .sensorGbn(latest.getSensorGbn())
                                     .onOff(OnOff.OFF)
-                                    .senior(Senior.builder().seniorId(1L).build()) // TODO: Senior 매핑 추가
                                     .build()
                     );
 

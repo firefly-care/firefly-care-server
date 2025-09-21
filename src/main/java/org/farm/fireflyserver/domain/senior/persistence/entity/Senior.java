@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.farm.fireflyserver.common.util.BaseCreatedTimeEntity;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 import org.farm.fireflyserver.domain.led.persistence.entity.LedState;
+import org.farm.fireflyserver.domain.manager.persistence.entity.Manager;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDate;
@@ -20,8 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-@AttributeOverride(name = "createdAt", column = @Column(columnDefinition = "TIMESTAMP COMMENT '서비스 시작일'"))
-public class Senior extends BaseCreatedTimeEntity {
+public class Senior {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,9 +35,6 @@ public class Senior extends BaseCreatedTimeEntity {
     @Comment("성별")
     private Gender gender;
 
-    @Comment("고위험군 여부")
-    private boolean isHighRisk;
-
     @Enumerated(EnumType.STRING)
     @Comment("보장 유형")
     private BenefitType benefitType;
@@ -46,12 +43,12 @@ public class Senior extends BaseCreatedTimeEntity {
     private LocalDate birthday;
 
     @Column(length = 25)
-    @Comment("휴대 전화번호")
+    @Comment("주 연락처")
     private String phoneNum;
 
     @Column(length = 25)
-    @Comment("집 전화번호")
-    private String homePhoneNum;
+    @Comment("부 연락처")
+    private String subPhoneNum;
 
     @Column(length = 25)
     @Comment("우편번호")
@@ -60,10 +57,6 @@ public class Senior extends BaseCreatedTimeEntity {
     @Column(length = 50)
     @Comment("주소")
     private String address;
-
-    @Column(length = 25)
-    @Comment("읍면동")
-    private String town;
 
     @Column(length = 10)
     @Comment("보호자 이름")
@@ -84,8 +77,8 @@ public class Senior extends BaseCreatedTimeEntity {
     @Comment("LED 사용 여부")
     private boolean isLedUse;
 
-    @Comment("AMI 사용 여부")
-    private boolean isAmiUse;
+    @Comment("서비스 시작일")
+    private LocalDate serviceStartDate;
 
     @Comment("대상자 가구 LED 장치 번호")
     private String ledMtchnSn;
@@ -96,10 +89,14 @@ public class Senior extends BaseCreatedTimeEntity {
     @OneToOne(mappedBy = "senior")
     private SeniorStatus seniorStatus;
 
-    @OneToMany(mappedBy = "senior")
-    private List<LedState> ledStates = new ArrayList<>();
+    @OneToOne
+    @JoinColumn(name = "manager_id", nullable = false)
+    private Manager manager;
 
     public void deactivate() {
         this.isActive = false;
+    }
+    public void assignManager(Manager manager) {
+        this.manager = manager;
     }
 }

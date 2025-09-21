@@ -3,6 +3,7 @@ package org.farm.fireflyserver.domain.care.persistence;
 import org.farm.fireflyserver.domain.account.persistence.entity.Account;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
 import org.farm.fireflyserver.domain.care.web.dto.CareDto;
+import org.farm.fireflyserver.domain.manager.persistence.entity.Manager;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,10 +26,9 @@ public interface CareRepository extends JpaRepository<Care, Long>, CareRepositor
             "s.name LIKE %:#{#req.searchTerm}% OR " +
             "CAST(s.birthday AS string) LIKE %:#{#req.searchTerm}% OR " +
             "s.phoneNum LIKE %:#{#req.searchTerm}% OR " +
-            "s.homePhoneNum LIKE %:#{#req.searchTerm}% OR " +
+            "s.subPhoneNum LIKE %:#{#req.searchTerm}% OR " +
             "s.zipCode LIKE %:#{#req.searchTerm}% OR " +
             "s.address LIKE %:#{#req.searchTerm}% OR " +
-            "s.town LIKE %:#{#req.searchTerm}% OR " +
             //Account 정보
             "m.name LIKE %:#{#req.searchTerm}% OR " +
             "m.phoneNum LIKE %:#{#req.searchTerm}%)")
@@ -45,12 +45,13 @@ public interface CareRepository extends JpaRepository<Care, Long>, CareRepositor
     List<Object[]> countByDateBetweenGroupByDate(LocalDateTime start, LocalDateTime end);
 
     // 특정 담당자가 수행한 돌봄 건수
-    long countByManagerAccount(Account manager);
+    long countByManager(Manager manager);
 
     // 특정 담당자가 돌본 대상자 수
-    @Query("select count(distinct c.senior) from Care c where c.managerAccount = :manager")
-    long countDistinctSeniorByManagerAccount(Account manager);
+    @Query("select count(distinct c.senior) from Care c where c.manager = :manager")
+    long countDistinctSeniorByManager(Manager manager);
 
     // 특정 담당자가 최근에 수행한 돌봄 기록
-    Care findTopByManagerAccountOrderByDateDesc(Account manager);
+    Care findTopByManagerOrderByDateDesc(Manager manager);
+
 }

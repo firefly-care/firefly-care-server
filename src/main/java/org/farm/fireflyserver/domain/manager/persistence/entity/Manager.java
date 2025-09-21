@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.farm.fireflyserver.domain.account.persistence.entity.Account;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
+import org.farm.fireflyserver.domain.senior.persistence.entity.Gender;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDate;
@@ -29,9 +30,16 @@ public class Manager {
     @Comment("이름")
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
     @Column(length = 25)
     @Comment("연락처")
     private String phoneNum;
+
+    @Column(length = 25)
+    @Comment("부연락처")
+    private String subPhoneNum;
 
     @Comment("생년월일")
     private LocalDate birth;
@@ -47,6 +55,16 @@ public class Manager {
     @Column(length = 50)
     @Comment("주소")
     private String address;
+
+    @Comment("우편번호")
+    private String zipCode;
+
+    @Comment("특이사항")
+    @Column(columnDefinition = "TEXT")
+    private String note;
+
+    @Comment("프로필 이미지 URL")
+    private String imageUrl;
 
     @Comment("돌봄 건수")
     private Long seniorCnt;

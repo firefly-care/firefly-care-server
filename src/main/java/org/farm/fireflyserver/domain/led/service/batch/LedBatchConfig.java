@@ -142,7 +142,7 @@ public class LedBatchConfig {
             System.out.println("[Batch] ledHistoryJob started at " + LocalDateTime.now());
 
             long now = System.currentTimeMillis();
-            jobLauncher.run(
+            jobLauncher.run(:q
                     ledHistoryJob,
                     new JobParametersBuilder()
                             .addString("run.id", UUID.randomUUID().toString())
