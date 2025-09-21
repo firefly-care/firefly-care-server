@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface CareRepository extends JpaRepository<Care, Long>, CareRepositoryCustom {
     @Query("SELECT c FROM Care c " +
-            "LEFT JOIN c.managerAccount m " +
+            "LEFT JOIN c.manager m " +
             "LEFT JOIN c.senior s WHERE " +
             "(:#{#req.type} IS NULL OR c.type = :#{#req.type}) AND " +
             "(:#{#req.result} IS NULL OR c.result = :#{#req.result}) AND " +

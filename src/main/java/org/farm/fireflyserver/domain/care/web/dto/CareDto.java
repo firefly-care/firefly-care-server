@@ -3,6 +3,7 @@ package org.farm.fireflyserver.domain.care.web.dto;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.farm.fireflyserver.domain.care.persistence.entity.Result;
 import org.farm.fireflyserver.domain.care.persistence.entity.Type;
 import org.farm.fireflyserver.domain.care.persistence.entity.Care;
@@ -13,7 +14,8 @@ import java.util.List;
 
 public class CareDto {
     @Getter
-    public class Register {
+    @NoArgsConstructor
+    public static class Register {
         private Long manager_id;
         private Long senior_id;
         private LocalDateTime date;
@@ -35,7 +37,7 @@ public class CareDto {
 
     public record Response (
             LocalDateTime date,
-            String managerId,
+            Long managerId,
             String managerName,
             Type type,
             String content,
@@ -46,8 +48,8 @@ public class CareDto {
         public static Response from(Care care) {
             return new Response(
                     care.getDate(),
-                    care.getManagerAccount().getId(),
-                    care.getManagerAccount().getName(),
+                    care.getManager().getManagerId(),
+                    care.getManager().getName(),
                     care.getType(),
                     care.getContent(),
                     String.valueOf(care.getSenior().getSeniorId()),
@@ -72,7 +74,7 @@ public class CareDto {
             Long emergCnt,
             List<CareTuple> cares
     ) {
-        public static record CareTuple (
+        public record CareTuple (
                 LocalDateTime careDate,
                 Type careType,
                 Result result
