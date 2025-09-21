@@ -63,6 +63,7 @@ public class SeniorServiceImpl implements SeniorService {
     @Override
     public List<SeniorInfoDto> searchSeniors(Boolean isActive, String keywordType, String keyword) {
         List<Senior> seniors = seniorRepository.searchSeniors(isActive, keywordType, keyword);
+
         return seniors.stream()
                 .map(this::mapToSeniorInfoDto)
                 .toList();
@@ -106,7 +107,7 @@ public class SeniorServiceImpl implements SeniorService {
             seniorStatus = new SeniorStatus();
         }
 
-        return SeniorDetailDto.fromEntities(senior, seniorStatus, manager.getAccount());
+        return SeniorDetailDto.fromEntities(senior, seniorStatus, manager);
     }
 
     @Transactional

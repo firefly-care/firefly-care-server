@@ -4,8 +4,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.farm.fireflyserver.common.exception.EntityNotFoundException;
 import org.farm.fireflyserver.common.response.ErrorCode;
-import org.farm.fireflyserver.domain.account.persistence.AccountRepository;
-import org.farm.fireflyserver.domain.account.persistence.entity.Account;
 import org.farm.fireflyserver.domain.care.persistence.entity.Result;
 import org.farm.fireflyserver.domain.care.persistence.entity.Type;
 import org.farm.fireflyserver.domain.care.mapper.CareMapper;
@@ -35,7 +33,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CareServiceImpl implements CareService {
     private final CareRepository careRepository;
-    private final AccountRepository accountRepository;
     private final ManagerRepository managerRepository;
     private final SeniorRepository seniorRepository;
     private final CareResultRepository careResultRepository;
@@ -45,7 +42,7 @@ public class CareServiceImpl implements CareService {
     @Override
     public void addCare(CareDto.Register dto) {
         Manager manager = managerRepository.findById(dto.getManager_id())
-                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MANAGER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
         Senior senior = seniorRepository.findById(dto.getSenior_id())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SENIOR_NOT_FOUND));
 
